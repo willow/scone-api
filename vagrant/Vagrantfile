@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.box = "hashicorp/precise64"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+
+  config.vm.synced_folder "..", "/vagrant"
+
+  # prevent `stdin: is not a tty` https://github.com/mitchellh/vagrant/issues/1673#issuecomment-28288042
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+
+  config.vm.provision "shell", path: "vagrant_provision.sh"
+
+  # Set the timezone to the host timezone https://coderwall.com/p/v8fr2g
+  require 'time'
+  timezone = 'Etc/GMT' + ((Time.zone_offset(Time.now.zone)/60)/60).to_s
+  config.vm.provision :shell, :inline => "if [ $(grep -c UTC /etc/timezone) -gt 0 ]; then echo \"#{timezone}\" | sudo tee /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata; fi"
+end

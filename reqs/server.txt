@@ -1,0 +1,10 @@
+-r common.txt
+django-heroku-postgresify==0.3
+gevent==0.13.8
+gunicorn==0.14.3
+newrelic==1.12.0.56
+raven==3.5.2
+dj-static==0.0.5
+django-redis-cache==0.10.0
+redis==2.9.0
+librabbitmq==1.0.3

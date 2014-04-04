@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="django" name="Django">
+      <configuration>
+        <option name="rootFolder" value="$MODULE_DIR$" />
+        <option name="settingsModule" value="src/settings/dev.py" />
+        <option name="manageScript" value="manage.py" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Django" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/src/templates" />
+        <option value="$MODULE_DIR$/../Documently/src/packages/NUnit.2.5.10.11092" />
+        <option value="$MODULE_DIR$/../MassTransit/lib/NUnit/net-2.0" />
+        <option value="$MODULE_DIR$/../angular-seed/app" />
+        <option value="$MODULE_DIR$/../angular-seed/app/partials" />
+        <option value="$MODULE_DIR$/../angular-seed/test/e2e" />
+        <option value="$MODULE_DIR$/../untitled-api/src/templates" />
+        <option value="$MODULE_DIR$/../simple-brunch/app/assets" />
+        <option value="$MODULE_DIR$/../CqrsSiteEngine/packages/System.Web.Providers.1.0.1" />
+        <option value="$MODULE_DIR$/../angular-phonecat/app" />
+        <option value="$MODULE_DIR$/../angular-phonecat/app/partials" />
+        <option value="$MODULE_DIR$/../angular-phonecat/test/e2e" />
+        <option value="$MODULE_DIR$/../brunch-ember-sassy/app/assets" />
+        <option value="$MODULE_DIR$/../Sharp-Architecture/BuildSystem/Tools/NUnit.2.5.7" />
+        <option value="$MODULE_DIR$/../angular-brunch-seed/app/assets" />
+        <option value="$MODULE_DIR$/../angular-brunch-seed/app/assets/test" />
+        <option value="$MODULE_DIR$/../angular-brunch-seed/app/assets/partials" />
+        <option value="$MODULE_DIR$/../backbone.marionette/spec/javascripts/fixtures" />
+        <option value="$MODULE_DIR$/../backbone.marionette/spec/performance" />
+        <option value="$MODULE_DIR$/../Backbone.ModelBinder/spec" />
+        <option value="$MODULE_DIR$/../Backbone.ModelBinder/sandbox" />
+        <option value="$MODULE_DIR$/../Backbone.ModelBinder/examples" />
+        <option value="$MODULE_DIR$/../ServiceStack.Examples/src/Backbone.Todos/docs" />
+        <option value="$MODULE_DIR$/../django-template-heroku/root/apps/mainsite/templates" />
+        <option value="$MODULE_DIR$/../BootstrapBackboneMVCFun/packages/System.Web.Providers.Core.1.0" />
+        <option value="$MODULE_DIR$/../jquery-analyticseventtracking-plugin" />
+      </list>
+    </option>
+  </component>
+</module>
+

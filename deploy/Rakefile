@@ -1,0 +1,101 @@
+# Deploy and rollback on Heroku in qa and production
+# sources: https://gist.github.com/njvitto/362873
+# https://gist.github.com/djburdick/4410411
+task :deploy_qa_light => ['deploy:set_qa_app', 'deploy:push', 'deploy:tag']
+task :deploy_production_light => ['deploy:set_production_app', 'deploy:push', 'deploy:tag']
+
+namespace :deploy do
+  PRODUCTION_APP = 'wifl-api-prod'
+  QA_APP = 'wifl-api-qa'
+  web_worker = 'web'
+  celery_worker = 'worker'
+
+  task :qa_migrations => [:set_qa_app, :push, :off, :migrate, :restart, :on, :tag]
+  task :qa_rollback => [:set_qa_app, :off, :rollback, :restart, :on]
+  task :qa_migrations_clone_prod => [:backup_prod_db, :set_qa_app, :off, :transfer_prod_db_to_qa, :prepare_qa,
+                                     :qa_migrations]
+
+  task :production_migrations => [:set_production_app, :push, :off, :backup_prod_db, :migrate, :restart, :on, :tag]
+  task :production_rollback => [:set_production_app, :off, :rollback, :restart, :on]
+
+
+  task :backup_prod_db => :set_production_app do
+    puts 'Backing up production database ...'
+    system("heroku pgbackups:capture --app #{PRODUCTION_APP} --expire")
+  end
+
+  task :set_qa_app do
+    APP = QA_APP
+    puts "=== APP #{APP} ==="
+  end
+
+  task :set_production_app do
+    APP = PRODUCTION_APP
+    puts "=== APP #{APP} ==="
+  end
+
+  task :push do
+    current_branch = `git rev-parse --abbrev-ref HEAD`.chomp
+    current_branch += ":master" if current_branch != "master"
+    puts "Deploying #{current_branch} to #{APP} ..."
+    system("git push #{'-f' if APP == QA_APP} git@heroku.com:#{APP}.git #{current_branch}")
+  end
+
+  task :restart do
+    puts 'Restarting app servers ...'
+    puts `heroku restart --app #{APP}`
+  end
+
+  task :tag do
+    release_name = "#{APP}_release-#{Time.now.utc.strftime("%Y%m%d%H%M%S")}"
+    puts "Tagging release as '#{release_name}'"
+    puts `git tag -a #{release_name} -m 'Tagged release'`
+    puts `git push --tags git@heroku.com:#{APP}.git`
+  end
+
+  task :migrate do
+    puts 'Running database migrations ...'
+    puts `heroku run python manage.py migrate --app #{APP}`
+  end
+
+  task :collectstatic do
+    puts 'Collecting static assets ...'
+    puts `heroku run python manage.py collectstatic --noinput   --app #{APP}`
+  end
+
+  task :off do
+    puts 'Taking the app offline ...'
+    puts `heroku maintenance:on --app #{APP}`
+    puts `heroku ps:scale #{web_worker}=0 --app #{APP}`
+    puts `heroku ps:scale #{celery_worker}=0 --app #{APP}`
+  end
+
+  task :on do
+    puts 'Bringing the app online ...'
+    puts `heroku ps:scale #{web_worker}=1 --app #{APP}`
+    puts `heroku ps:scale #{celery_worker}=1 --app #{APP}`
+    puts `heroku maintenance:off --app #{APP}`
+  end
+
+  task :rollback do
+    puts 'Rolling back to last version ...'
+    system("heroku rollback --app #{APP}")
+  end
+
+  task :transfer_prod_db_to_qa do
+    puts 'Transfering prod DB to QA db ...'
+    system("heroku pg:reset DATABASE --app #{QA_APP} --confirm #{QA_APP}")
+    #reset is needed to completely drop db
+    #restoring only overwrites tables within the restore file - newer tables are not untouched
+    #which causes migration issues
+    system("heroku pgbackups:restore DATABASE --app #{QA_APP} --confirm #{QA_APP} `heroku pgbackups:url --app #{PRODUCTION_APP}`")
+  end
+
+  task :prepare_qa do
+    puts 'Preparing QA db ...'
+    #remove any pending messages
+    system("heroku run python manage.py celery purge --app #{QA_APP}")
+    #disable any periodic tasks
+    system("echo \"UPDATE djcelery_periodictask SET enabled = FALSE WHERE name <> 'celery.backend_cleanup';\" | heroku pg:psql DATABASE --app #{QA_APP}")
+  end
+end

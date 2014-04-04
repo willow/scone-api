@@ -1,0 +1,2 @@
+-r reqs/server.txt
+pylibmc==1.2.3
