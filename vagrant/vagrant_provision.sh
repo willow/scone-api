@@ -28,6 +28,14 @@ sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> 
 apt-get update -y
 apt-get install -y postgresql-9.3 pgadmin3
 apt-get install -y libpq-dev
+cp -f /vagrant/vagrant/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
+dos2unix /etc/postgresql/9.3/main/pg_hba.conf
+cp -f /vagrant/vagrant/postgresql.conf /etc/postgresql/9.3/main/postgresql.conf
+dos2unix /etc/postgresql/9.3/main/pg_hba.conf
+/etc/init.d/postgresql reload
+sudo -u postgres createuser --superuser vagrant || :
+sudo -u postgres createdb vagrant || :
+sudo -u postgres psql -c "ALTER USER vagrant WITH PASSWORD 'vagrant';"
 
 pip install virtualenv
 pip install virtualenvwrapper
