@@ -111,3 +111,4 @@ mkdir -p ${WORKON_HOME}
 source /usr/local/bin/virtualenvwrapper.sh
 
 alias cls='printf "\033c"'
+alias dj='python manage.py'
