@@ -33,6 +33,8 @@ DATABASES = {
         'PORT': '',
     }
 }
+
+GRAPH_DB_URL = 'http://localhost:7474/db/data/'
 ########## END DATABASE CONFIGURATION
 
 
@@ -48,18 +50,6 @@ CACHES = {
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
-#celery hijacks its logging to prevent other libs from screwing it up. In dev only, it'd be nice to write to a log file.
-#http://docs.celeryproject.org/en/latest/configuration.html#logging
-#why: http://stackoverflow.com/a/6942030/173957
-#code: /celery/app/log.py
-#if self.app.conf.CELERYD_HIJACK_ROOT_LOGGER:
-#  root.handlers = []
-
-# celery controls the root logging behavior with --loglevel=LEVEL
-# we've set it to DEBUG so that our app controls the levels.
-
-CELERYD_HIJACK_ROOT_LOGGER = False
-CELERY_REDIRECT_STDOUTS = False
 
 LOGGING['handlers']['console_handler'] = {
   'level': 'DEBUG',
@@ -74,6 +64,7 @@ LOGGING['handlers']['file_handler'] = {
   'maxBytes': 1024 * 1024 * 5, # 5 MB
   'backupCount': 5,
   'formatter': 'standard',
+  'encoding': 'UTF-8',
   }
 
 LOGGING['handlers']['request_handler'] = {
@@ -83,6 +74,7 @@ LOGGING['handlers']['request_handler'] = {
   'maxBytes': 1024 * 1024 * 5, # 5 MB
   'backupCount': 5,
   'formatter': 'standard',
+  'encoding': 'UTF-8',
   }
 
 LOGGING['handlers']['exception_handler'] = {
@@ -92,6 +84,7 @@ LOGGING['handlers']['exception_handler'] = {
   'maxBytes': 1024 * 1024 * 5, # 5 MB
   'backupCount': 5,
   'formatter': 'standard',
+  'encoding': 'UTF-8',
   }
 
 app_logger = {
@@ -121,10 +114,6 @@ LOGGING['loggers'] = {
   'src.apps': app_logger,
   'src.libs': app_logger,
   'celery.task': app_logger
-  #there is a bug with celery 3.0 where the logger doesn't display the task id, unique id, worker, name etc
-  #https://github.com/celery/django-celery/issues/211
-
-  #why celery logs all as warning: http://stackoverflow.com/questions/12664250/celery-marks-all-output-as-warning
 }
 ########## END LOGGING CONFIGURATION
 
@@ -167,8 +156,17 @@ INSTALLED_APPS += (
 )
 ########## END DJANGO EXTENSIONS CONFIGURATION
 
+########### EMAIL CONFIGURATION
+SENDGRID_USERNAME = "Test_User"
+SENDGRID_PASSWORD = "Password"
+########## END EMAIL CONFIGURATION
+
+########### SOCIAL PROVIDER CONFIGURATION
+REDDIT_SUBREDDIT_QUERY_LIMIT = 2
+########## END SOCIAL PROVIDER CONFIGURATION
+
 #Get a developer's local overrides (if they exist)
 try:
-  from dev_override import *
+  from .dev_override import *
 except:
   pass

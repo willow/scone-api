@@ -1,5 +1,6 @@
 import html.entities
 import re
+import nltk
 
 
 def unescape(text):
@@ -24,7 +25,6 @@ def unescape(text):
 
   return re.sub(r'&#?\w+;', fixup, text)
 
-
 def despacify(text):
   def fixup(m):
     text = m.group(0)
@@ -42,3 +42,9 @@ def decodeJs(text):
 
 def only_alpha_numeric(content):
   return ''.join(x for x in content if x.isalnum())
+
+
+def tokenize_words(string):
+  #http://www.nltk.org/book/ch03.html
+  tokenizer = nltk.tokenize.RegexpTokenizer(r"\w+(?:[-']\w+)*|'|[-.(]+|\S\w*")
+  return tokenizer.tokenize(string.lower())

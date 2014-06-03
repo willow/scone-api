@@ -1,7 +1,7 @@
 """Production settings and globals."""
 
 
-from os import environ
+import dj_database_url
 import os
 
 from postgresify import postgresify
@@ -17,10 +17,14 @@ from .common import *
 
 
 ########## DATABASE CONFIGURATION
-DATABASES = postgresify()
+DATABASES = {'default': dj_database_url.config()}
 
 # See: https://docs.djangoproject.com/en/dev/ref/databases/#persistent-database-connections
 CONN_MAX_AGE = 60
+
+GRAPH_DB_URL = environ['GRAPH_DB_URL']
+GRAPH_DB_USERNAME = environ['GRAPH_DB_USERNAME']
+GRAPH_DB_PASSWORD = environ['GRAPH_DB_PASSWORD']
 ########## END DATABASE CONFIGURATION
 
 
@@ -45,11 +49,7 @@ INSTALLED_APPS += (
   'raven.contrib.django.raven_compat',
 )
 
-CELERYD_HIJACK_ROOT_LOGGER = False
-CELERY_REDIRECT_STDOUTS = False
-
 APP_LOG_LEVEL = os.environ.get('APP_LOG_LEVEL', 'INFO')
-SCRAPY_LOG_LEVEL = os.environ.get('SCRAPY_LOG_LEVEL', 'ERROR')
 
 LOGGING['handlers']['console_handler'] = {
   'level': APP_LOG_LEVEL,
@@ -92,7 +92,8 @@ LOGGING['loggers'] = {
 
 ########## CELERY CONFIGURATION
 # See: http://docs.celeryproject.org/en/latest/configuration.html#broker-transport
-celery_rabbit_url = os.environ.get('RABBITMQ_BIGWIG_URL')
+# https://devcenter.heroku.com/articles/rabbitmq-bigwig#provisioning-the-add-on
+celery_rabbit_url = os.environ['RABBITMQ_BIGWIG_RX_URL']
 BROKER_URL = celery_rabbit_url
 
 # See: http://docs.celeryproject.org/en/latest/configuration.html#celery-result-backend
@@ -111,13 +112,15 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 
 ########## SECRET CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = environ.get('SECRET_KEY', SECRET_KEY)
+SECRET_KEY = environ['SECRET_KEY']
 ########## END SECRET CONFIGURATION
+
 
 ########## ALLOWED HOSTS CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ['.herokuapp.com', 'api.wifl.com']
 ########## END ALLOWED HOST CONFIGURATION
+
 
 ########## CORS CONFIGURATION
 CORS_ORIGIN_REGEX_WHITELIST = (
@@ -125,12 +128,31 @@ CORS_ORIGIN_REGEX_WHITELIST = (
 )
 ########## END CORS CONFIGURATION
 
-########## MIDDLEWARE CONFIGURATION
-PROXY_URL = os.environ['PROXY_URL']
-PROXY_USERNAME = os.environ['PROXY_USERNAME']
-PROXY_PASSWORD = os.environ['PROXY_PASSWORD']
-########## END MIDDLEWARE CONFIGURATION
 
-########## ANALYTICS CONFIGURATION
-MIXPANEL_API_TOKEN = os.environ['MIXPANEL_API_TOKEN']
-########## END ANALYTICS CONFIGURATION
+########### SOCIAL PROVIDER CONFIGURATION
+TWITTER_APP_KEY = environ['TWITTER_APP_KEY']
+TWITTER_APP_SECRET = environ['TWITTER_APP_SECRET']
+########## END SOCIAL PROVIDER CONFIGURATION
+
+
+########### NLP CONFIGURATION
+ALCHEMY_API_KEY = environ['ALCHEMY_API_KEY']
+########## END NLP CONFIGURATION
+
+
+########### DRIVE CONFIGURATION
+DRIVE_USERNAME = environ['DRIVE_USERNAME']
+DRIVE_PASSWORD = environ['DRIVE_PASSWORD']
+DRIVE_ASSIGNMENT_SPREADSHEET_KEY = environ['DRIVE_ASSIGNMENT_SPREADSHEET_KEY']
+########## END DRIVE CONFIGURATION
+
+
+########### API CONFIGURATION
+EXTERNAL_API_TOKEN = environ['EXTERNAL_API_TOKEN']
+########## END API CONFIGURATION
+
+
+########### EMAIL CONFIGURATION
+SENDGRID_USERNAME = environ['SENDGRID_USERNAME']
+SENDGRID_PASSWORD = environ['SENDGRID_PASSWORD']
+########## END EMAIL CONFIGURATION

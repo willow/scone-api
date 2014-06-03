@@ -1,5 +1,6 @@
 import sys
 from pygeocoder import Geocoder
+from pygeolib import GeocoderError
 from src.libs.geo_utils.complete_address import CompleteAddress
 from src.libs.geo_utils.signals import location_geocoded
 
@@ -43,3 +44,12 @@ def get_geocoded_address(address_str):
 
   return CompleteAddress(results.latitude, results.longitude, address1, address2, city, state,
                          zip_code, results.formatted_address)
+
+def get_country(location):
+  try:
+    results = _geocoder.geocode(location)
+    ret_val = results[0].country
+  except GeocoderError:
+    ret_val = ''
+    
+  return ret_val

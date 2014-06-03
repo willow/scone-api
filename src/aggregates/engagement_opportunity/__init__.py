@@ -1,0 +1,1 @@
+default_app_config = 'src.aggregates.engagement_opportunity.engagement_opportunity_config.EngagementOpportunityConfig'

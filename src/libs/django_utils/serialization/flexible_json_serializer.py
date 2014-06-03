@@ -1,14 +1,13 @@
-#http://web.archive.org/web/20120414135953/http://www.traddicts
+# http://web.archive.org/web/20120414135953/http://www.traddicts
 # .org/webdevelopment/flexible-and-simple-json-serialization-for-django
-#http://stackoverflow.com/questions/2249792/json-serializing-django-models-with-simplejson
+# http://stackoverflow.com/questions/2249792/json-serializing-django-models-with-simplejson
 from datetime import datetime
 from io import StringIO
 from django.core import serializers
 from django.db.models import Model
 from django.db.models.query import QuerySet
-from django.utils.encoding import smart_unicode
-from django.utils.simplejson import dumps
 import collections
+from json import dumps
 
 
 class UnableToSerializeError(Exception):
@@ -16,7 +15,7 @@ class UnableToSerializeError(Exception):
 
   def __init__(self, value):
     self.value = value
-    Exception.__init__(self)
+    super().__init__(self)
 
   def __str__(self):
     return repr(self.value)
@@ -36,7 +35,6 @@ class JSONSerializer():
     self.use_natural_keys = options.pop("use_natural_keys", False)
     self.currentLoc = ''
 
-
     self.django_json_serializer = serializers.get_serializer("json")()
 
     self.level = 0
@@ -50,7 +48,7 @@ class JSONSerializer():
 
   def get_string_value(self, obj, field):
     """Convert a field's value to a string."""
-    return smart_unicode(field.value_to_string(obj))
+    return field.value_to_string(obj)
 
   def start_serialization(self):
     """Called when serializing of the queryset starts."""
@@ -88,7 +86,7 @@ class JSONSerializer():
       self.handle_queryset(object)
     elif isinstance(object, bool):
       self.handle_simple(object)
-    elif isinstance(object, int) or isinstance(object, float) or isinstance(object, int):
+    elif isinstance(object, (int, float)):
       self.handle_simple(object)
     elif isinstance(object, str):
       self.handle_simple(object)
@@ -98,6 +96,8 @@ class JSONSerializer():
       self.handle_date(object)
     elif hasattr(object, '_asdict'):
       self.handle_dictionary(object._asdict())
+    elif isinstance(object, tuple):
+          self.handle_list(object)
     else:
       raise UnableToSerializeError(type(object))
 
@@ -107,7 +107,7 @@ class JSONSerializer():
     self.start_object()
     for key, value in d.items():
       self.currentLoc += key + '.'
-      #self.stream.write(unicode(self.currentLoc))
+      # self.stream.write(unicode(self.currentLoc))
       i += 1
       self.handle_simple(key)
       self.stream.write(': ')
@@ -121,9 +121,9 @@ class JSONSerializer():
     """Called to handle a list"""
     self.start_array()
 
-    for value in l:
+    for index, value in enumerate(l):
       self.handle_object(value)
-      if l.index(value) != len(l) - 1:
+      if index != len(l) - 1:
         self.stream.write(', ')
 
     self.end_array()

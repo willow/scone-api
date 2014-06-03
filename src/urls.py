@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.conf.urls import patterns, include, url
-from src.apps.rest_api import urls as api_urls
 
 # region Admin Urls
 # See: https://docs.djangoproject.com/en/dev/topics/http/urls/
@@ -17,8 +16,5 @@ urlpatterns = patterns(
 # endregion
 
 # region App Urls
-urlpatterns += patterns(
-  '',
-  url(r'^api/', include(api_urls)),
-)
+
 # endregion

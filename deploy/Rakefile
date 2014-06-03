@@ -94,7 +94,7 @@ namespace :deploy do
   task :prepare_qa do
     puts 'Preparing QA db ...'
     #remove any pending messages
-    system("heroku run python manage.py celery purge --app #{QA_APP}")
+    system("heroku run python manage.py celery purge -f --app #{QA_APP}")
     #disable any periodic tasks
     system("echo \"UPDATE djcelery_periodictask SET enabled = FALSE WHERE name <> 'celery.backend_cleanup';\" | heroku pg:psql DATABASE --app #{QA_APP}")
   end

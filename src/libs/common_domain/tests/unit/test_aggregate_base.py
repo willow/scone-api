@@ -1,5 +1,5 @@
 from functools import partial
-from mock import MagicMock
+from unittest.mock import MagicMock
 from src.libs.common_domain.aggregate_base import AggregateBase
 from src.libs.common_domain.event_record import EventRecord
 from src.libs.common_domain.event_signal import EventSignal

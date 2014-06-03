@@ -2,7 +2,7 @@ from collections import deque
 from src.libs.common_domain.event_record import EventRecord
 
 
-class AggregateBase(object):
+class AggregateBase:
   def __init__(self):
     self._uncommitted_events = deque()
 

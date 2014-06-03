@@ -11,7 +11,9 @@ CELERY_ALWAYS_EAGER = True
 
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
 
-BROKER_TRANSPORT = 'django'
+# See: http://docs.celeryproject.org/en/latest/configuration.html#broker-transport
+BROKER_URL = 'django://'
 
-CELERY_RESULT_BACKEND = 'database'
+# See: http://docs.celeryproject.org/en/latest/configuration.html#celery-result-backend
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 ########## END CELERY CONFIGURATION

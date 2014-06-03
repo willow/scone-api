@@ -1,10 +1,9 @@
 -r common.txt
-django-heroku-postgresify==0.3
-gevent==0.13.8
-gunicorn==0.14.3
-newrelic==1.12.0.56
-raven==3.5.2
-dj-static==0.0.5
+dj-database-url==0.3.0
+aiohttp==0.7.3
+gunicorn==18.0
+newrelic==2.18.1.15
+raven==4.2.3
+git+git://github.com/kennethreitz/dj-static.git#egg=dj-static
 django-redis-cache==0.10.0
 redis==2.9.0
-librabbitmq==1.0.3

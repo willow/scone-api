@@ -37,6 +37,14 @@ sudo -u postgres createuser --superuser vagrant || :
 sudo -u postgres createdb vagrant || :
 sudo -u postgres psql -c "ALTER USER vagrant WITH PASSWORD 'vagrant';"
 
+wget -O - http://debian.neo4j.org/neotechnology.gpg.key | apt-key add -
+echo 'deb http://debian.neo4j.org/repo stable/' > /etc/apt/sources.list.d/neo4j.list
+apt-get update -y
+apt-get install -y neo4j
+cp -f /vagrant/vagrant/neo4j-server.properties /etc/neo4j/neo4j-server-properties
+dos2unix /etc/neo4j/neo4j-server-properties
+
+
 pip install virtualenv
 pip install virtualenvwrapper
 

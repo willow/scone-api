@@ -1,6 +1,8 @@
 import logging
+from bs4 import BeautifulSoup
 from src.libs.text_utils.CanonicalNameResult import CanonicalNameResult
 from src.libs.text_utils.formatting.text_formatter import only_alpha_numeric
+import html.parser
 
 logger = logging.getLogger(__name__)
 
@@ -18,17 +20,25 @@ def get_canonical_name_from_keywords(content, keywords):
       ret_val.append(CanonicalNameResult(v, True))
 
   return list(set(ret_val))
-def get_canonical_name_from_keywords(content, keywords):
+
+def unescape_html(text):
+  return html.unescape(text)
+
+def strip_html(text):
+  soup = BeautifulSoup(text)
+  return soup.get_text()
+
+def strip_html_from_iterable(iterable):
   ret_val = []
+  
+  for string in iterable:
+    soup = BeautifulSoup(string)
+    ret_val.append(soup.get_text())
+    
+  return ret_val
 
-  content_alnum = only_alpha_numeric(content).lower()
-  content_words = [only_alpha_numeric(x) for x in content.lower().split()]
+def retrieve_urls_from_text(text):
+  soup = BeautifulSoup(text)
+  links = soup.find_all('a')
 
-  for k, v in list(keywords.items()):
-    if " " in k:
-      if only_alpha_numeric(k).lower() in content_alnum:
-        ret_val.append(CanonicalNameResult(v, True))
-    elif only_alpha_numeric(k).lower() in content_words:
-      ret_val.append(CanonicalNameResult(v, True))
-
-  return list(set(ret_val))
+  return [link['href'] for link in links]

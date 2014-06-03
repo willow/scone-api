@@ -1,0 +1,38 @@
+[
+{
+  "fields": {
+    "period": "hours",
+    "every": 1
+  },
+  "model": "djcelery.intervalschedule",
+  "pk": 1
+},
+{
+  "fields": {
+    "last_update": "2014-04-20T00:30:19.297Z"
+  },
+  "model": "djcelery.periodictasks",
+  "pk": 1
+},
+{
+  "fields": {
+    "kwargs": "{}",
+    "name": "Run Engagement Discovery",
+    "exchange": null,
+    "args": "[]",
+    "total_run_count": 0,
+    "crontab": null,
+    "queue": null,
+    "enabled": true,
+    "expires": null,
+    "routing_key": null,
+    "date_changed": "2014-04-20T00:30:19.301Z",
+    "task": "src.apps.engagement_discovery.services.engagement_discovery_tasks.discover_engagement_opportunities_task",
+    "description": "",
+    "interval": 1,
+    "last_run_at": null
+  },
+  "model": "djcelery.periodictask",
+  "pk": 1
+}
+]

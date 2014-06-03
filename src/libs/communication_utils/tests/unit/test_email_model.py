@@ -1,5 +1,5 @@
 from django.utils import timezone
-from mock import MagicMock
+from unittest.mock import MagicMock
 from src.libs.communication_utils.models import Email
 from src.libs.communication_utils.tests.email_test_data import email_1
 

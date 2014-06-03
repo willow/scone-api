@@ -20,6 +20,7 @@ lib64
 __pycache__
 /**/logs/*.log
 /**/logs/*.log.*
+logs/*.*
 
 # Installer logs
 pip-log.txt
@@ -28,6 +29,11 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
+
+ENV
+
+__MACOSX
+.DS_Store
 
 # Translations
 *.mo
@@ -40,6 +46,7 @@ nosetests.xml
 default.db
 *.db-journal
 .idea/workspace.xml
+.idea/dictionaries/
 .idea/misc.xml
 .scrapy
 .idea/vagrant.xml
