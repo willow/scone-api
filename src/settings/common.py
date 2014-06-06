@@ -270,8 +270,9 @@ register('json', json_flex_dumps, json_flex_loads,
 CELERY_TASK_SERIALIZER = 'json'
 
 CELERY_IMPORTS = (
-  'src.apps.engagement_discovery.services.engagement_discovery_tasks',
   'src.apps.assignment_delivery.services.assignment_delivery_tasks',
+  'src.apps.engagement_discovery.services.engagement_discovery_tasks',
+  'src.apps.maintenance.database.services.database_maintenance_tasks',
   'src.aggregates.client.services.client_tasks',
   'src.libs.communication_utils.services.email_tasks',
 )
