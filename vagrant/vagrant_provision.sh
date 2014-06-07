@@ -26,7 +26,7 @@ apt-get install -y python3.4-dev
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
 apt-get update -y
-apt-get install -y postgresql-9.3 pgadmin3
+apt-get install -y postgresql-9.3 pgadmin3 postgresql-contrib
 apt-get install -y libpq-dev
 cp -f /vagrant/vagrant/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf
 dos2unix /etc/postgresql/9.3/main/pg_hba.conf
