@@ -13,13 +13,22 @@ from src.libs.text_utils.parsers import text_parser
 from src.libs.text_utils.parsers.text_parser import strip_html
 from src.libs.web_utils.scraping import scraper_utils
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def _is_valid_redditor(author):
   ret_val = True
 
   if ret_val:
     recent_comments = author.get_comments(time='month')
-    author_comments_karma = sum(rc.score for rc in recent_comments)
+    #@todo: this must be removed within the next several days as hpoefully reddit will be fixed
+    passing_score = 15
+    try:
+      author_comments_karma = sum(rc.score for rc in recent_comments)
+    except:
+      author_comments_karma = passing_score
     if author_comments_karma < 15:
       ret_val = False
 
@@ -37,7 +46,7 @@ def _is_valid_submission(submission):
     created = get_utc_from_timestamp(submission.created)
     delta = relativedelta(timezone.now(), created)
 
-    if delta.days > 3:
+    if delta.days > 7:
       ret_val = False
 
   return ret_val
@@ -89,7 +98,13 @@ def _get_eos_from_submissions(submissions, _text_parser=None, _scraper_utils=Non
         text = _text_parser.unescape_html(text)
         provider_action = ProviderActionEnum.reddit_self_post
       else:
-        text = _scraper_utils.get_main_content_from_web_page(submission.url)
+        try:
+          text = _scraper_utils.get_main_content_from_web_page(submission.url)
+        except:
+          logger.info("Error getting text from reddit link submission", exc_info=True)
+          # Don't store this submission.
+          continue
+
         provider_action = ProviderActionEnum.reddit_link_post
 
       created_at = get_utc_from_timestamp(submission.created_utc)
@@ -155,19 +170,13 @@ def search_by_subreddit(subreddit_name, _reddit_client_provider=None):
   if not _reddit_client_provider: _reddit_client_provider = reddit_client_provider
   reddit_client = _reddit_client_provider.get_reddit_client()
 
+  # todo find a way to make each post it's own celery request? or, catch timeouts and retry.
+
   submissions = reddit_client.get_subreddit(subreddit_name).get_hot(limit=settings.REDDIT_SUBREDDIT_QUERY_LIMIT)
   submissions = [submission for submission in submissions if _is_valid_submission(submission)]
 
   eos_from_submissions = _get_eos_from_submissions(submissions)
   return eos_from_submissions
-
-
-def search_by_redditor(author, _reddit_client_provider=None):
-  if not _reddit_client_provider: _reddit_client_provider = reddit_client_provider
-  reddit_client = _reddit_client_provider.get_reddit_client()
-
-  return reddit_client.get_redditor(author)
-
 
 def _get_reddit_post_websites(reddit_eo, _text_parser=None):
   if not _text_parser: _text_parser = text_parser

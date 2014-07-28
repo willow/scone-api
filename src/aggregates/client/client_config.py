@@ -6,4 +6,3 @@ class ClientConfig(AppConfig):
   # noinspection PyUnresolvedReferences
   def ready(self):
     import src.aggregates.client.event_handlers
-    import src.aggregates.client.reversions

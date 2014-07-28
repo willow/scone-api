@@ -6,7 +6,10 @@ sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
 # abort immediately on error
 set -e
 
-apt-get install dos2unix
+apt-get install dos2unix -y
+
+# host wake-up guest time sync
+apt-get install dkms -y
 
 apt-get update -y
 

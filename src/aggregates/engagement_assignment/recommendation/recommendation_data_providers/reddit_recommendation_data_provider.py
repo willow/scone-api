@@ -2,11 +2,15 @@ from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.recommendation.recommendation_data_providers \
   .base_recommendation_data_provider import \
   BaseRecommendationDataProvider
+from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
 
 
 class RedditRecommendationDataProvider(BaseRecommendationDataProvider):
-  def provide_recommendation_data(self, client, engagement_opportunity):
-    ret_val = super().provide_recommendation_data(client, engagement_opportunity)
+  def provide_recommendation_data(self, client, engagement_opportunity_id, assigned_entity_type):
+        
+    ret_val = super().provide_recommendation_data(client, engagement_opportunity_id, assigned_entity_type)
+    
+    engagement_opportunity = engagement_opportunity_service.get_engagement_opportunity(engagement_opportunity_id)
 
     eo_attrs = engagement_opportunity.engagement_opportunity_attrs
     profile_attrs = engagement_opportunity.profile.profile_attrs

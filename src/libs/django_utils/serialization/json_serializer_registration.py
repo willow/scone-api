@@ -5,7 +5,7 @@ def json_flex_dumps(obj):
   # This func is called from the settings file. Nothing in this file should re-import django stuff (which
   # JSONSerializer Does)
   from src.libs.django_utils.serialization.flexible_json_serializer import JSONSerializer
-  return JSONSerializer().serialize(obj)
+  return JSONSerializer().default(obj)
 
 
 # Decoder function

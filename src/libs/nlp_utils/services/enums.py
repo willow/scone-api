@@ -2,6 +2,7 @@ from enum import IntEnum
 
 
 class NamedEntityTypeEnum(IntEnum):
+  any = 0
   person = 1
   other = 99
   unknown = 100

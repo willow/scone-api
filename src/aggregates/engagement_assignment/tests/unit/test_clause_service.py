@@ -7,7 +7,7 @@ from src.apps.engagement_discovery.enums import ProviderEnum
 def test_tweet_options_exist_for_ta_action_clause():
   # Arrange
   mock_recommendation_data = {}
-  mock_recommendation_data['contains_links'] = False
+  mock_recommendation_data['contains_link'] = False
   mock_recommendation_data['provider_type'] = ProviderEnum.twitter
   mock_randomizer = MagicMock(spec=random)
 

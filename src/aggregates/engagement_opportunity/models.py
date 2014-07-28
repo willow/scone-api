@@ -1,15 +1,13 @@
 from django.db import models, transaction
 from django.utils import timezone
 from jsonfield import JSONField
-import reversion
 import uuid
 
 from src.aggregates.engagement_opportunity.signals import created, added_topic
 from src.aggregates.topic.models import Topic
 from src.apps.engagement_discovery.enums import ProviderChoices, ProviderEnum, ProviderActionChoices
 from src.libs.common_domain.aggregate_base import AggregateBase
-from src.libs.common_domain.models import RevisionEvent
-from src.libs.django_utils.serialization.flexible_json_serializer import JSONSerializer
+from src.libs.common_domain.models import Event
 
 
 class EngagementOpportunity(models.Model, AggregateBase):
@@ -40,7 +38,7 @@ class EngagementOpportunity(models.Model, AggregateBase):
       raise TypeError("eo is required")
 
     ret_val._raise_event(
-      created, sender=EngagementOpportunity, instance=ret_val,
+      created,
       engagement_opportunity_uid=str(uuid.uuid1()),
       engagement_opportunity_external_id=engagement_opportunity_discovery_object.engagement_opportunity_external_id,
       engagement_opportunity_attrs=engagement_opportunity_discovery_object.engagement_opportunity_attrs,
@@ -55,7 +53,7 @@ class EngagementOpportunity(models.Model, AggregateBase):
 
   def associate_with_topic(self, topic):
     self._raise_event(
-      added_topic, sender=EngagementOpportunity, instance=self,
+      added_topic, engagement_opportunity_uid=self.engagement_opportunity_uid,
       engagement_opportunity_topic_uid=str(uuid.uuid1()),
       topic_type_id=topic.id
     )
@@ -85,22 +83,13 @@ class EngagementOpportunity(models.Model, AggregateBase):
   def save(self, internal=False, *args, **kwargs):
     if internal:
       with transaction.atomic():
-        with reversion.create_revision():
-          super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-          for topic in self._topics_list:
-            self.topics.add(topic)
+        for topic in self._topics_list:
+          self.topics.add(topic)
 
-          serializer = JSONSerializer()
-
-          for event in self._uncommitted_events:
-            # we don't need to store the instance because it's not really part of the parameters
-            # and django-reversion will keep a snapshop
-            kwargs_to_save = {k: v for k, v in event.kwargs.items() if k != 'instance'}
-
-            data = serializer.serialize(kwargs_to_save)
-
-            reversion.add_meta(RevisionEvent, name=event.event_fq_name, version=event.version, data=data)
+        for event in self._uncommitted_events:
+          Event.objects.create(name=event.event_fq_name, version=event.version, data=event.kwargs)
 
       self.send_events()
     else:

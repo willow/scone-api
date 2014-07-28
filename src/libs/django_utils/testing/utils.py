@@ -1,13 +1,16 @@
 from django.core import management
 from django.conf import settings
 import pytest
+from src.libs.common_domain import event_store
 from src.libs.graphdb_utils.services import graphdb_provider
+from src.libs.graphdb_utils.services.graphdb_service import purge_data
 
 """
 The _db_with_migrations_marker is a pattern used by pytest-django.
 Pytest itself doesn't look for that naming conventions. The convention is to use Autouser=True and then look for a
 fixture. This is a convenient mechanism so you don't actually need to rely on a fixture.
 """
+
 
 @pytest.fixture(scope='session')
 def enable_south_migrations():
@@ -58,9 +61,7 @@ def _graph_db_setup(request):
   graph_db = graphdb_provider.get_graph_client()
 
   def clean_db():
-    graph_db.query("""MATCH (n)
-    OPTIONAL MATCH (n)-[r]-()
-    DELETE n,r""")
+    purge_data(graph_db)
 
   clean_db()
 
@@ -70,11 +71,13 @@ def _graph_db_setup(request):
 
   request.addfinalizer(fin)
 
+
 @pytest.fixture(autouse=True, scope='function')
 def _graph_db_marker(request):
   marker = request.keywords.get('graph_db', None)
   if marker:
     request.getfuncargvalue('graph_db')
+
 
 @pytest.fixture(scope='function')
 def graph_db(request, _graph_db_setup):
@@ -91,3 +94,32 @@ def graph_db(request, _graph_db_setup):
   request.addfinalizer(fin)
 
   return graph_db
+
+
+@pytest.fixture(scope='function')
+def load_fixture(request):
+  try:
+    fixture_name = request.keywords['load_fixture'].kwargs['fixture_name']
+  except KeyError as ex:
+    raise pytest.UsageError('The load_fixture fixture requires a name of the file to load') from ex
+
+  from django.core.management import call_command
+  call_command("loaddata", fixture_name)
+
+
+@pytest.fixture(autouse=True, scope='function')
+def _load_fixture_marker(request):
+  marker = request.keywords.get('load_fixture', None)
+  if marker:
+    request.getfuncargvalue('load_fixture')
+
+@pytest.fixture(scope='function')
+def replay_event_store(request):
+  event_store.replay_events()
+
+
+@pytest.fixture(autouse=True, scope='function')
+def _replay_event_store(request):
+  marker = request.keywords.get('replay_events', None)
+  if marker:
+    request.getfuncargvalue('replay_event_store')

@@ -74,9 +74,9 @@ class YAAuthorRulesEngine(BaseRulesEngine):
       score += followers_count_score
       internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score
 
-    name = calculation_data[constants.NAME]
-    if name:
-      if self._demography_service.get_gender(name) == GenderEnum.female:
+    gender = calculation_data[constants.GENDER]
+    if gender:
+      if gender == GenderEnum.female:
         female_gender_score = 3
         score += female_gender_score
         internal_score_attrs[constants.GENDER] = female_gender_score
@@ -93,3 +93,6 @@ class YAAuthorRulesEngine(BaseRulesEngine):
 
     return score, internal_score_attrs
 
+  def get_final_score(self, score_attrs):
+    scores = [x['score'] for x in score_attrs]
+    return sum(scores)

@@ -1,6 +1,6 @@
 git+git://github.com/django/django.git@1.7a2#egg=Django
 #Django>=1.7.0,<=1.7.9 #waiting for django 1.7 to be in pypi
-celery==3.1.11
+celery==3.1.12
 psycopg2==2.5.2
 django-celery==3.1.10
 Fabric==1.6.1
@@ -8,23 +8,23 @@ Sphinx==1.1.3
 Pillow==2.1.0
 django-localflavor
 jsonfield==0.9.20
-django-reversion==1.8.0
 python-dateutil==2.1
 pytz==2013b
 pygeocoder==1.2.1
 djangorestframework==2.3.8
 django-cors-headers==0.12
-git+git://github.com/djangonauts/django-hstore#egg=django-hstore
 simplejson==3.3.2
 email-reply-parser==0.1.9
 sendgrid==0.5.1
 beautifulsoup4==4.3.2
 twython==3.1.2
-requests==2.2.1
+git+git://github.com/WiFL-co/requests.git@b59dc76b65fe0bdf7efe76f4e153afc0b01efd74#egg=requests-fork
 neo4jrestclient==2.0.2
 gspread==0.2.1
 git+git://github.com/WiFL-co/python-readability#egg=readability
 http://www.nltk.org/nltk3-alpha/nltk-3.0a3.tar.gz#egg=nltk
 git+git://github.com/miso-belica/sumy.git#egg=sumy
-praw==2.1.16
+praw==2.1.17
 ipython==2.1.0
+git+https://github.com/WiFL-co/python-linkedin#egg=python-linkedin
+django-adminplus==0.3

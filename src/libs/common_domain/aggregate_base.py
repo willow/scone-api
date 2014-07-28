@@ -6,7 +6,7 @@ class AggregateBase:
   def __init__(self):
     self._uncommitted_events = deque()
 
-  def _raise_event(self, event, sender, **kwargs):
+  def _raise_event(self, event, **kwargs):
     self._apply_event(event, **kwargs)
 
     event_name = event.name
@@ -14,12 +14,12 @@ class AggregateBase:
     # get the fq name - this is used for replaying events
     event_fq_name = event.module_name + "." + event.name
 
-    self._uncommitted_events.append(EventRecord(event, event_name, event_fq_name, version, sender, kwargs))
+    self._uncommitted_events.append(EventRecord(event, event_name, event_fq_name, version, kwargs))
 
   def send_events(self):
     while self._uncommitted_events:
       event_record = self._uncommitted_events.popleft()
-      event_record.event_obj.send(event_record.sender, **event_record.kwargs)
+      event_record.event_obj.send(None, **event_record.kwargs)
 
   def _apply_event(self, event, **kwargs):
     event_func_name = "_handle_{0}_event".format(event.name)

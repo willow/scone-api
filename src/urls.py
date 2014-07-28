@@ -1,5 +1,9 @@
+from adminplus.sites import AdminSitePlus
 from django.contrib import admin
 from django.conf.urls import patterns, include, url
+
+admin.site = AdminSitePlus()
+admin.autodiscover()
 
 # region Admin Urls
 # See: https://docs.djangoproject.com/en/dev/topics/http/urls/

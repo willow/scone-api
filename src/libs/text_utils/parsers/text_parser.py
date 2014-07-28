@@ -32,8 +32,7 @@ def strip_html_from_iterable(iterable):
   ret_val = []
   
   for string in iterable:
-    soup = BeautifulSoup(string)
-    ret_val.append(soup.get_text())
+    ret_val.append(strip_html(string))
     
   return ret_val
 
@@ -42,3 +41,10 @@ def retrieve_urls_from_text(text):
   links = soup.find_all('a')
 
   return [link['href'] for link in links]
+
+def format_https_links_to_http(link):
+  if link.startswith('https://'):
+    import re
+    return re.sub(r'https', r'http', link)
+  else:
+    return link

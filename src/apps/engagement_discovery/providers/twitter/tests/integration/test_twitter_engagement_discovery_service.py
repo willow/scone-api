@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 def test_tweets_create_engagement_opportunities():
   mock_twitter_client_service = MagicMock(spec=twitter_client_service)
   python_topic = Topic._from_attrs('python')
-  python_topic.associate_subtopic_with_topic('#python', TopicCategoryEnum.hashtag.value)
+  python_topic.associate_subtopic_with_topic('#python', TopicCategoryEnum.hashtag.value, {})
 
   python_topic.save()
 
@@ -36,7 +36,7 @@ def test_tweets_create_engagement_opportunities():
     return_value=[twitter_eo]
   )
 
-  twitter_engagement_discovery_service.discover_engagement_opportunities_from_tweets(
+  twitter_engagement_discovery_service.discover_engagement_opportunities_from_twitter_subtopic(
     python_topic._subtopics_list[0],
     mock_twitter_client_service
   )

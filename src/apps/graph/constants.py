@@ -1,0 +1,6 @@
+ASSIGNED_PROFILE_IDS = 'profile_ids'
+ASSIGNED_PROFILE_UIDS = 'profile_uids'
+ASSIGNED_EO_IDS = 'eo_ids'
+ASSIGNED_EO_UIDS = 'eo_uids'
+TOPIC_IDS = 'topic_ids'
+TOPIC_UIDS = 'topic_uids'

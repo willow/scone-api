@@ -1,4 +1,5 @@
 """Common settings and globals."""
+from celery.app.log import TaskFormatter
 
 from datetime import timedelta
 from os import environ
@@ -22,19 +23,19 @@ SITE_NAME = basename(DJANGO_ROOT)
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(DJANGO_ROOT)
-########## END PATH CONFIGURATION
+# ######### END PATH CONFIGURATION
 
 
-########## DEBUG CONFIGURATION
+# ######### DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
+# ######### END DEBUG CONFIGURATION
 
 
-########## MANAGER CONFIGURATION
+# ######### MANAGER CONFIGURATION
 SYSTEM_EMAIL = ('System', 'system@wifl.com')
 PUBLIC_EMAIL = ('wifl', 'info@wifl.com')
 ADMIN_EMAIL = ('Admin', 'admin@wifl.com')
@@ -43,17 +44,17 @@ ADMIN_EMAIL = ('Admin', 'admin@wifl.com')
 ADMINS = (
   ADMIN_EMAIL,
 )
-########## END MANAGER CONFIGURATION
+# ######### END MANAGER CONFIGURATION
 
 
-########## DATABASE CONFIGURATION
+# ######### DATABASE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ATOMIC_REQUESTS
 ATOMIC_REQUESTS = True
-########## END DATABASE CONFIGURATION
+# ######### END DATABASE CONFIGURATION
 
 
-########## GENERAL CONFIGURATION
+# ######### GENERAL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
 TIME_ZONE = 'UTC'
 
@@ -68,10 +69,10 @@ USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-########## END GENERAL CONFIGURATION
+# ######### END GENERAL CONFIGURATION
 
 
-########## MEDIA CONFIGURATION
+# ######### MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = normpath(join(DJANGO_ROOT, 'media'))
 
@@ -172,8 +173,9 @@ DJANGO_APPS = (
   'django.contrib.humanize',
 
   # Admin panel and documentation:
-  'django.contrib.admin',
+  'django.contrib.admin.apps.SimpleAdminConfig',
   'django.contrib.admindocs',
+  'adminplus',
 )
 
 THIRD_PARTY_APPS = (
@@ -184,8 +186,6 @@ THIRD_PARTY_APPS = (
   'kombu.transport.django',
 
   # Database
-  'reversion',
-  'django_hstore',
 
   # Analytics
 
@@ -202,9 +202,12 @@ LOCAL_APPS = (
   'src.aggregates.engagement_assignment',
   'src.aggregates.engagement_opportunity',
   'src.aggregates.profile',
+  'src.aggregates.prospect',
   'src.aggregates.topic',
 
   # APPS
+  'src.apps.assignment_delivery',
+  'src.apps.domain',
   'src.apps.engagement_discovery',
   'src.apps.graph',
 
@@ -232,19 +235,22 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # we've set it to DEBUG so that our app controls the levels.
 
 CELERYD_HIJACK_ROOT_LOGGER = False
+#why celery logs all as warning: http://stackoverflow.com/questions/12664250/celery-marks-all-output-as-warning
 CELERY_REDIRECT_STDOUTS = False
 
-#there is a bug with celery 3.0 where the logger doesn't display the task id, unique id, worker, name etc
-#https://github.com/celery/django-celery/issues/211
 
-#why celery logs all as warning: http://stackoverflow.com/questions/12664250/celery-marks-all-output-as-warning
-
+# todo - only use taskformatter class when celery is running - consider doing this in celery_app.py
 LOGGING = {
   'version': 1,
   'disable_existing_loggers': True,
   'formatters': {
     'standard': {
-      'format': '[%(levelname)s] %(name)s: %(message)s'
+      '()': TaskFormatter,
+      'fmt': '[%(levelname)s/%(processName)s/%(process)s] [%(task_name)s(%(task_id)s)] %(name)s: %(message)s'
+    },
+    'local_standard': {
+      '()': TaskFormatter,
+      'fmt': '[%(asctime)s: %(levelname)s/%(processName)s/%(process)s] [%(task_name)s(%(task_id)s)] %(name)s: %(message)s'
     },
   },
   'handlers': {}
@@ -253,12 +259,13 @@ LOGGING = {
 
 
 ########## CELERY CONFIGURATION
-CELERY_LONGEST_RUNNING_TASK_SECONDS = 60 * 60 * 2  #seconds * minutes * hours = 2 hours
+CELERY_LONGEST_RUNNING_TASK_SECONDS = 60 * 60 * 48  #seconds * minutes * hours = 2 days
 # See: http://celery.readthedocs.org/en/latest/configuration.html#celery-task-result-expires
 CELERY_TASK_RESULT_EXPIRES = timedelta(seconds=CELERY_LONGEST_RUNNING_TASK_SECONDS)
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
+CELERYD_TASK_TIME_LIMIT = 60 * 20 #seconds * minutes = 20 min
 # See: http://docs.celeryproject.org/en/latest/configuration.html#celery-accept-content
 # 3.2 is going to remove pickle http://docs.celeryproject.org/en/latest/whatsnew-3.1.html#last-version-to-enable
 # -pickle-by-default
@@ -270,11 +277,13 @@ register('json', json_flex_dumps, json_flex_loads,
 CELERY_TASK_SERIALIZER = 'json'
 
 CELERY_IMPORTS = (
-  'src.apps.assignment_delivery.services.assignment_delivery_tasks',
   'src.apps.engagement_discovery.services.engagement_discovery_tasks',
+  'src.apps.assignment_delivery.services.assignment_delivery_tasks',
+  'src.apps.domain.engagement_assignment.services.assigned_prospect_tasks',
   'src.apps.maintenance.database.services.database_maintenance_tasks',
   'src.aggregates.client.services.client_tasks',
   'src.libs.communication_utils.services.email_tasks',
+  'src.libs.python_utils.celery.celery_tasks',
 )
 
 # See: http://docs.celeryproject.org/en/master/configuration.html#celery-acks-late
@@ -316,3 +325,7 @@ CORS_ALLOW_CREDENTIALS = True
 REDDIT_USER_AGENT = 'WiFL v0.1 https://github.com/WiFL-co'
 REDDIT_SUBREDDIT_QUERY_LIMIT = 10
 ########## END SOCIAL PROVIDER CONFIGURATION
+
+########### EXTERNAL API CONFIGURATION
+HTTP_TIMEOUT = 10  #seconds
+########## END EXTERNAL API CONFIGURATION

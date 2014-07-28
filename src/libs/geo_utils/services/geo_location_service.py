@@ -50,6 +50,6 @@ def get_country(location):
     results = _geocoder.geocode(location)
     ret_val = results[0].country
   except GeocoderError:
-    ret_val = ''
-    
+    ret_val = None
+
   return ret_val

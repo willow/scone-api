@@ -1,12 +1,12 @@
 from django.db import models
-from reversion.models import Revision
+from jsonfield import JSONField
+from src.libs.django_utils.serialization.flexible_json_serializer import JSONSerializer
 
 
-class RevisionEvent(models.Model):
-  revision  = models.ForeignKey(Revision)
+class Event(models.Model):
   version = models.PositiveIntegerField()
   name = models.CharField(max_length=1024)
-  data = models.TextField()
+  data = JSONField(load_kwargs={'cls': JSONSerializer})
 
   def __str__(self):
-      return 'RevisionEvent #' + str(self.pk) + ': ' + self.name
+    return 'Event #' + str(self.pk) + ': ' + self.name

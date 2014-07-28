@@ -1,6 +1,7 @@
 from django.db.utils import IntegrityError
 from src.aggregates.profile import factories
 from src.aggregates.profile.models import Profile
+from src.aggregates.profile.providers.linkedin.services import linkedin_profile_service
 from src.aggregates.profile.providers.reddit.services import reddit_profile_service
 from src.aggregates.profile.providers.twitter.services import twitter_profile_service
 from src.apps.engagement_discovery.enums import ProviderEnum
@@ -22,7 +23,7 @@ def clean_profile_attrs(profile_attrs, _url_utils=url_utils):
   return profile_attrs
 
 
-def save_profile_from_provider_info(profile_external_id, provider_type):
+def save_profile_from_provider_info(prospect_id, profile_external_id, provider_type, **kwargs):
   try:
     profile = get_profile_from_provider_info(
       profile_external_id,
@@ -31,16 +32,18 @@ def save_profile_from_provider_info(profile_external_id, provider_type):
   # this should be specific: profile.DoesNotExist
   except Profile.DoesNotExist:
     if provider_type == ProviderEnum.twitter:
-      profile_attrs = twitter_profile_service.get_twitter_profile_attrs(profile_external_id)
+      profile_attrs = twitter_profile_service.get_twitter_profile_attrs(profile_external_id, **kwargs)
     elif provider_type == ProviderEnum.reddit:
-      profile_attrs = reddit_profile_service.get_reddit_profile_attrs(profile_external_id)
+      profile_attrs = reddit_profile_service.get_reddit_profile_attrs(profile_external_id, **kwargs)
+    elif provider_type == ProviderEnum.linkedin:
+      profile_attrs = linkedin_profile_service.get_linkedin_profile_attrs(profile_external_id, **kwargs)
     else:
       raise Exception('Invalid provider type')
 
     profile_attrs = clean_profile_attrs(profile_attrs)
 
     profile = factories.construct_profile_from_provider_info_and_profile_attrs(
-      profile_external_id, provider_type, profile_attrs
+      prospect_id, profile_external_id, provider_type, profile_attrs
     )
 
     try:
@@ -62,3 +65,6 @@ def save_or_update(profile):
 
 def get_profile(profile_id):
   return Profile.objects.get(pk=profile_id)
+
+def get_profile_from_uid(profile_uid):
+  return Profile.objects.get(profile_uid=profile_uid)

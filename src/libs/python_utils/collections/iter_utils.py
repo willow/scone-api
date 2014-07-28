@@ -27,6 +27,7 @@ def stemmify_iterable(iterable, _stemming_util = stemming_utils, _text_formatter
     ret_val.append(keywords.strip())
   return ret_val
 
+# todo: put this in text utils -> stemmify_iterable should call this
 def stemmify_string(string, _stemming_util = stemming_utils, _text_formatter = text_formatter):
   tokens = _text_formatter.tokenize_words(string)
   return " ".join([_stemming_util.find_stem(token) for token in tokens])

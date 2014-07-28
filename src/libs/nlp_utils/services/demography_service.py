@@ -1,16 +1,31 @@
+from django.conf import settings
 import requests
 
 from src.libs.nlp_utils.services.enums import GenderEnum
-from urllib.request import AbstractBasicAuthHandler
 
 
-GENDER_API_URL = 'http://api.genderize.io/'
+GENDER_API_URL = 'https://genderize.p.mashape.com/'
+MASHAPE_API_KEY = settings.MASHAPE_API_KEY
 
 
 def get_gender(name):
   first_name = name.split(' ')[0]
-  params = {"name": first_name}
-  gender_response = requests.get(GENDER_API_URL, params=params)
+
+  params = {
+    "name": first_name,
+  }
+
+  headers = {
+    "X-Mashape-Authorization": MASHAPE_API_KEY
+  }
+
+  gender_response = requests.get(GENDER_API_URL, params=params, headers=headers)
+
+  try:
+    gender_response.raise_for_status()
+  except Exception as e:
+    raise OSError("Error making request to genderize. params: %s", params) from e
+
   result = gender_response.json()
 
   try:

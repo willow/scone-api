@@ -7,11 +7,14 @@ from src.apps.engagement_discovery.providers.twitter.twitter_engagement_discover
 from src.libs.datetime_utils.parsers import datetime_parser
 from src.libs.nlp_utils.services import named_entity_service
 from src.libs.nlp_utils.services.enums import NamedEntityTypeEnum
+from src.libs.python_utils.logging.logging_utils import log_wrapper
 from src.libs.social_utils.providers.twitter import twitter_client_service
 
 from src.aggregates.profile.services.profile_service import get_profile_from_provider_info
 from src.apps.engagement_discovery.enums import ProviderEnum, ProviderActionEnum
+import logging
 
+logger = logging.getLogger(__name__)
 
 _twitter_url_prefix = "https://twitter.com/{0}"
 
@@ -44,27 +47,44 @@ def _is_valid_tweet(tweet):
   return ret_val
 
 
-def find_tweets_from_keyword(keyword, _twitter_client_service=None):
+def find_tweets_from_keyword(keyword, named_entity_type, _twitter_client_service=None, **kwargs):
   ret_val = []
   if not _twitter_client_service:
     _twitter_client_service = twitter_client_service
 
-  tweets_from_keywords = _twitter_client_service.search_twitter_by_keywords(
-    keyword,
-    include_entities=True,
-    exclude_retweets=True,
-    since="d"
+  search_log_message = (
+    "Searching twitter for keyword: %s",
+    keyword
   )
 
-  tweets_from_keywords = [tweet for tweet in tweets_from_keywords if _is_valid_tweet(tweet)]
+  with log_wrapper(logger.debug, *search_log_message):
+    tweets_from_keywords = _twitter_client_service.search_twitter_by_keywords(
+      keyword,
+      include_entities=True,
+      exclude_retweets=True,
+      **kwargs
+    )
 
-  usernames_from_tweets = sorted(set(tweet['user']['screen_name'] for tweet in tweets_from_keywords))
+  if kwargs.get('screen_name'):
+    valid_tweets = tweets_from_keywords
 
-  tweets_from_users = _twitter_client_service.search_by_users(*usernames_from_tweets, since="w")
+  else:
+    valid_tweet_log_message = (
+      "Getting valid tweets for keyword: %s",
+      keyword
+    )
 
-  valid_usernames = _get_valid_users_from_tweets(tweets_from_users)
+    with log_wrapper(logger.debug, *valid_tweet_log_message):
 
-  valid_tweets = [tweet for tweet in tweets_from_keywords if tweet['user']['screen_name'] in valid_usernames]
+      tweets_from_keywords = [tweet for tweet in tweets_from_keywords if _is_valid_tweet(tweet)]
+
+      usernames_from_tweets = sorted(set(tweet['user']['screen_name'] for tweet in tweets_from_keywords))
+
+      tweets_from_users = _twitter_client_service.search_by_users(*usernames_from_tweets, since="w")
+
+      valid_usernames = _get_valid_users_from_tweets(tweets_from_users, named_entity_type)
+
+      valid_tweets = [tweet for tweet in tweets_from_keywords if tweet['user']['screen_name'] in valid_usernames]
 
   for tweet in valid_tweets:
     username = tweet['user']['screen_name']
@@ -97,7 +117,7 @@ def find_tweets_from_keyword(keyword, _twitter_client_service=None):
   return ret_val
 
 
-def _get_valid_users_from_tweets(tweets_from_users, _named_entity_service=None):
+def _get_valid_users_from_tweets(tweets_from_users, named_entity_type, _named_entity_service=None):
   if not _named_entity_service:
     _named_entity_service = named_entity_service
 
@@ -113,12 +133,21 @@ def _get_valid_users_from_tweets(tweets_from_users, _named_entity_service=None):
   for user, tweets in active_users.items():
     valid_user = False
 
-    try:
-      get_profile_from_provider_info(user, ProviderEnum.twitter)
+    if named_entity_type == NamedEntityTypeEnum.any:
       valid_user = True
-    except Profile.DoesNotExist:
-      if _named_entity_service.get_entity_type(tweets[0]['user']['name']) == NamedEntityTypeEnum.person:
+    else:
+      try:
+        get_profile_from_provider_info(user, ProviderEnum.twitter)
         valid_user = True
+      except Profile.DoesNotExist:
+        name_for_user = tweets[0]['user']['name']
+
+        try:
+          if _named_entity_service.get_entity_type(name_for_user) == named_entity_type:
+            valid_user = True
+        except:
+          logger.exception("Error getting entity type. name: %s", name_for_user)
+          valid_user = False
 
     if valid_user:
       ret_val.append(user)

@@ -6,4 +6,3 @@ class TopicConfig(AppConfig):
   # noinspection PyUnresolvedReferences
   def ready(self):
     import src.aggregates.topic.event_handlers
-    import src.aggregates.topic.reversions

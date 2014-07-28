@@ -39,17 +39,8 @@ def get_ta_name_clause(recommendation_data):
   return ta_name
 
 
-def get_about_clause(recommendation_data, _keyword_service=keyword_service, _text_parser=text_parser):
-  text = recommendation_data[constants.TEXT]
-  text = _text_parser.strip_html(text)
-  
-  keywords = _keyword_service.get_keywords(text)
-  if keywords:
-    about_clause = keywords[0][constants.TEXT]
-  else:
-    about_clause = recommendation_data[constants.TEXT][:25] + "..."
-
-  return about_clause + "."
+def get_about_clause(recommendation_data):
+  return recommendation_data[constants.TEXT][:25] + "..."
 
 
 def get_response_clause(recommendation_data, _randomizer=random):

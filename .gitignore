@@ -53,3 +53,5 @@ default.db
 .vagrant
 
 dev_override.py
+
+debug_file.py

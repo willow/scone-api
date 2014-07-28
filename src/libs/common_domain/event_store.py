@@ -1,18 +1,29 @@
-from src.libs.common_domain.models import RevisionEvent
+from src.libs.common_domain.models import Event
+from src.libs.django_utils.query.query_utils import batch_qs
 from src.libs.python_utils.types.type_utils import load_object
-import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def replay_events():
-  rev_events = RevisionEvent.objects.order_by("pk")
-  for rev_event in rev_events:
-    signal = load_object(rev_event.name)
+  counter = 0
+  rev_events = Event.objects.order_by("pk")
+  logger.debug("Replay %i events", rev_events.count())
 
-    # the aggregate will be the last item in the list
-    obj = list(rev_event.revision.version_set.all())[-1].object
+  for rev_event_batch in batch_qs(rev_events):
+    logger.debug("starting batch : %s", rev_event_batch[0])
 
-    data = json.loads(rev_event.data)
-    data['instance'] = obj
+    rev_events = rev_event_batch[3]
 
-    signal.send(obj.__class__, **data)
+    for rev_event in rev_events:
+      signal = load_object(rev_event.name)
 
+      data = rev_event.data
+
+      try:
+        signal.send(None, allow_non_idempotent=False, **data)
+      except Exception:
+        logger.warn("Error sending signal for: %s Data: %s", rev_event.name, data, exc_info=True)
+      counter += 1
+      logger.debug("Sending signal: %s : %i", rev_event.name, counter)

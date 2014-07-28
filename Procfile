@@ -4,4 +4,4 @@ web: python manage.py collectstatic --noinput; newrelic-admin run-program gunico
 # have one scheduler or we'll have concurrency issues.
 
 # loglevel must be > DEBUG because of django celery bug in schedulers.py.
-worker: python /app/.heroku/python/bin/celery --app=src.celery_app:app worker -B -E --maxtasksperchild=1000 --loglevel=info
+worker: newrelic-admin run-program python /app/.heroku/python/bin/celery --app=src.celery_app:app worker -B -E --maxtasksperchild=1000 --loglevel=info -Ofair

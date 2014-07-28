@@ -2,7 +2,7 @@
 dj-database-url==0.3.0
 aiohttp==0.7.3
 gunicorn==18.0
-newrelic==2.18.1.15
+newrelic==2.20.1.18
 raven==4.2.3
 git+git://github.com/kennethreitz/dj-static.git#egg=dj-static
 django-redis-cache==0.10.0

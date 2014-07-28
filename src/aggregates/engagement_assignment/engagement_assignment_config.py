@@ -6,4 +6,3 @@ class EngagementAssignmentConfig(AppConfig):
   # noinspection PyUnresolvedReferences
   def ready(self):
     import src.aggregates.engagement_assignment.event_handlers
-    import src.aggregates.engagement_assignment.reversions

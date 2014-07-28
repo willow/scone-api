@@ -6,4 +6,3 @@ class EngagementOpportunityConfig(AppConfig):
   # noinspection PyUnresolvedReferences
   def ready(self):
     import src.aggregates.engagement_opportunity.event_handlers
-    import src.aggregates.engagement_opportunity.reversions

@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from src.libs.common_domain.models import RevisionEvent
+from src.libs.common_domain.models import Event
 
 
-class RevisionEventAdmin(admin.ModelAdmin):
+class EventAdmin(admin.ModelAdmin):
   actions = None
 
 
@@ -24,4 +24,4 @@ class RevisionEventAdmin(admin.ModelAdmin):
   def get_readonly_fields(self, request, obj=None):
     return (self.fields or [f.name for f in self.model._meta.fields])
 
-admin.site.register(RevisionEvent, RevisionEventAdmin)
+admin.site.register(Event, EventAdmin)

@@ -8,6 +8,8 @@ from django.db.models import Model
 from django.db.models.query import QuerySet
 import collections
 from json import dumps
+from json.decoder import JSONDecoder
+from json.encoder import JSONEncoder
 
 
 class UnableToSerializeError(Exception):
@@ -21,12 +23,12 @@ class UnableToSerializeError(Exception):
     return repr(self.value)
 
 
-class JSONSerializer():
+class JSONSerializer(JSONEncoder):
   boolean_fields = ['BooleanField', 'NullBooleanField']
   datetime_fields = ['DatetimeField', 'DateField', 'TimeField']
   number_fields = ['IntegerField', 'AutoField', 'DecimalField', 'FloatField', 'PositiveSmallIntegerField']
 
-  def serialize(self, obj, **options):
+  def default(self, obj, **options):
     self.options = options
 
     self.stream = options.pop("stream", StringIO())
@@ -97,7 +99,7 @@ class JSONSerializer():
     elif hasattr(object, '_asdict'):
       self.handle_dictionary(object._asdict())
     elif isinstance(object, tuple):
-          self.handle_list(object)
+      self.handle_list(object)
     else:
       raise UnableToSerializeError(type(object))
 
@@ -217,3 +219,6 @@ class JSONSerializer():
     """Return the fully serialized object (or None if the output stream is  not seekable).sss """
     if isinstance(getattr(self.stream, 'getvalue', None), collections.Callable):
       return self.stream.getvalue()
+
+  def decode(self, s, **kwargs):
+    return JSONDecoder().decode(s, **kwargs)
