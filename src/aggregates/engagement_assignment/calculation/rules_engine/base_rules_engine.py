@@ -122,6 +122,9 @@ class BaseRulesEngine(ABC):
     return score, base_score_attrs
 
   def get_score(self, calculation_data):
+    # get the unique prospect
+    # get the unique profiles
+    # loop through each assigned entity
     internal_score, internal_score_attrs = self._get_internal_score(calculation_data)
 
     base_score, base_score_attrs = self.apply_base_score(calculation_data)
