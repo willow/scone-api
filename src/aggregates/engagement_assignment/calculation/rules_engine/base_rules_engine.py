@@ -3,9 +3,6 @@ from collections import Counter
 from datetime import datetime
 from pytz import UTC
 from src.aggregates.engagement_assignment import constants
-from src.aggregates.engagement_assignment.calculation.calculation_objects import CalculationAssignedEntityObject
-from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
-from src.aggregates.profile.services import profile_service
 from src.apps.domain.engagement_assignment.services import assigned_prospect_service
 from src.libs.python_utils.collections import iter_utils
 from src.libs.text_utils.parsers import text_parser
@@ -18,9 +15,19 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRulesEngine(ABC):
-  def apply_base_score(
-      self, calculation_data, _iter_utils=iter_utils, _text_parser=text_parser,
-      _assigned_prospect_service=assigned_prospect_service):
+  def __init__(self, _iter_utils=None, _text_parser=None, _assigned_prospect_service=None):
+
+    if not _iter_utils: _iter_utils = iter_utils
+    self._iter_utils = _iter_utils
+
+    if not _text_parser: _text_parser = text_parser
+    self._text_parser = _text_parser
+
+    if not _assigned_prospect_service: _assigned_prospect_service = assigned_prospect_service
+    self._assigned_prospect_service = _assigned_prospect_service
+
+  def apply_base_prospect_score(self, prospect):
+    prospect_rules_engine = self._get_prospect_rules_engine
     score = 0
     base_score_attrs = {}
     counter = Counter()
@@ -29,7 +36,7 @@ class BaseRulesEngine(ABC):
     if bio:
       bio_score = 1
       score += bio_score
-      base_score_attrs[constants.BIO] = bio_score
+      base_score_attrs[constants.BIO_SCORE] = bio_score
 
     emails = calculation_data[constants.EMAIL_ADDRESSES]
     if emails:
@@ -178,34 +185,13 @@ class BaseRulesEngine(ABC):
     # pre_score = internal_score_attrs[constants.SCORE] + base_score_attrs[constants.SCORE]
     #
     # score_attrs = {
-    #   'pre_score': pre_score, 'base_score_attrs': base_score_attrs,
-    #   'internal_score_attrs': internal_score_attrs
+    # 'pre_score': pre_score, 'base_score_attrs': base_score_attrs,
+    # 'internal_score_attrs': internal_score_attrs
     # }
 
     return score, score_attrs
 
-  def _get_assigned_entities(self, assignment_attrs):
-    assigned_entities = []
-    for assignment_attr, assigned_entity_ids in assignment_attrs.items():
 
-      for assigned_entity_id in assigned_entity_ids:
-
-        if assignment_attr == constants.ASSIGNED_EO_IDS:
-          assigned_entity = engagement_opportunity_service.get_engagement_opportunity(assigned_entity_id)
-          provider_type = assigned_entity.provider_type
-          entity_type = constants.EO
-          prospect = assigned_entity.profile.prospect
-        elif assignment_attr == constants.ASSIGNED_PROFILE_IDS:
-          assigned_entity = profile_service.get_profile(assigned_entity_id)
-          provider_type = assigned_entity.provider_type
-          entity_type = constants.PROFILE
-          prospect = assigned_entity.prospect
-        else:
-          raise ValueError("Invalid assignment attrs")
-
-        assigned_entities.append(CalculationAssignedEntityObject(assigned_entity, entity_type, provider_type, prospect))
-
-    return assigned_entities
 
   def apply_base_prospect_score(self, prospect):
     pass

@@ -1,4 +1,5 @@
 BIO = 'bio'
+BIO_SCORE = 'bio_score'
 NAME = 'name'
 RELATIVE_DOB = 'relative_dob'
 PROFILE_WEBSITES = 'profile_websites'
