@@ -1,11 +1,5 @@
-import pytest
-from src.aggregates.engagement_assignment.services import engagement_assignment_tasks
+from src.aggregates.engagement_assignment.tests.ea_test_data import client_1
 
 
-def test_refresh_engagement_assignments():
-  assert True
-
-
-def test_linkedin_score():
-  engagement_assignment_tasks.refresh_assignments_task.delay()
-  assert True
+def test_saas_rules_engine_score():
+  assert client_1

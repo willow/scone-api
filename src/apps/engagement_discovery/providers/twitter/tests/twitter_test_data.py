@@ -8,7 +8,8 @@ eastern_time_zone = pytz.timezone('US/Eastern')
 
 # region tweet1
 class TwitterUserFactory(factory.Factory):
-  FACTORY_FOR = dict
+  class Meta:
+    model = dict
 
   statuses_count = 100
   followers_count = 1000
@@ -16,7 +17,8 @@ class TwitterUserFactory(factory.Factory):
 
 
 class TweetFactory(factory.Factory):
-  FACTORY_FOR = dict
+  class Meta:
+    model = dict
 
   in_reply_to_user_id = None
   retweet_count = 0
