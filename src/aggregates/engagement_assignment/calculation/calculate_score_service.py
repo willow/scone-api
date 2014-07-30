@@ -2,31 +2,7 @@ from src.aggregates.engagement_assignment import constants
 
 from src.aggregates.client.enums import ClientTypeEnum
 from src.aggregates.engagement_assignment.calculation.calculation_objects import CalculationAssignedEntityObject
-from src.aggregates.engagement_assignment.calculation.rules_engine \
-  .appointment_finding_tech_startup_affiliate_rules_engine import \
-  AppointmentFindingTechStartupAffiliateRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine \
-  .appointment_finding_tech_startup_client_rules_engine import \
-  AppointmentFindingTechStartupClientRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.bitcoin_philippines_startup_rules_engine import \
-  BitcoinPhilippinesStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.food_lover_tech_startup_rules_engine import \
-  FoodLoverTechStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.marketing_startup_rules_engine import \
-  MarketingTechStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine \
-  .professional_social_networking_tech_startup_rules_engine import \
-  ProfessionalSocialNetworkingTechStartupRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.rules_engine import RulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.sass_tech_startup_rules_engine import \
-  SaaSTechStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.sports_meetup_tech_startup_rules_engine import \
-  SportsMeetupTechStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.video_convo_tech_startup_rules_engine import \
-  VideoConvoTechStartupRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.ya_author_rules_engine import YAAuthorRulesEngine
-from src.aggregates.engagement_assignment.calculation.rules_engine.ya_writing_meetup_rules_engine import \
-  YAWritingMeetupRulesEngine
 from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
 from src.aggregates.profile.services import profile_service
 
@@ -63,7 +39,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   # loop through ae's
   score_attrs['assigned_entities'] = []
   for ae in assigned_entities:
-    ae_score, ae_score_attrs = rules_engine.get_ae_score(ae)
+    ae_score, ae_score_attrs = rules_engine.get_assigned_entity_score(ae)
     score_attrs['assigned_entities'].append({
       'score': ae_score,
       'score_attrs': ae_score_attrs,
@@ -96,8 +72,6 @@ def get_rules_engine(client):
     return YAWritingMeetupRulesEngine()
   elif client.client_type == ClientTypeEnum.food_lover_startup_rules_engine:
     return FoodLoverTechStartupRulesEngine()
-  elif client.client_type == ClientTypeEnum.bitcoin_philippines_startup_rules_engine:
-    return BitcoinPhilippinesStartupRulesEngine()
 
   raise ValueError("No rules exist for this client")
 
