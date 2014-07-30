@@ -17,6 +17,7 @@ from src.aggregates.engagement_assignment.calculation.rules_engine.marketing_sta
 from src.aggregates.engagement_assignment.calculation.rules_engine \
   .professional_social_networking_tech_startup_rules_engine import \
   ProfessionalSocialNetworkingTechStartupRulesEngine
+from src.aggregates.engagement_assignment.calculation.rules_engine.rules_engine import RulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.sass_tech_startup_rules_engine import \
   SaaSTechStartupRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.sports_meetup_tech_startup_rules_engine import \
@@ -36,7 +37,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   assigned_entities = _get_assigned_entities(assignment_attrs)
   prospect = assigned_entities[0].prospect
 
-  rules_engine = get_rules_engine(client)
+  rules_engine = RulesEngine(client)
 
   prospect_score, prospect_score_attrs = rules_engine.get_prospect_score(prospect)
   score_attrs['prospect'] = {
