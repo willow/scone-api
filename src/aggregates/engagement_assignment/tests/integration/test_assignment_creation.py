@@ -3,7 +3,7 @@ from src.aggregates.client.enums import ClientTypeEnum
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation import calculate_score_service
 from src.aggregates.engagement_assignment.tests.ea_test_data import ClientFactory, EngagementOpportunityFactory, \
-  EngagementAssignmentFactory, ProfileFactory
+  EngagementAssignmentFactory
 from src.apps.engagement_discovery.enums import ProviderEnum, ProviderActionEnum
 
 

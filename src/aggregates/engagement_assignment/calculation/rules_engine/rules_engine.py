@@ -19,7 +19,8 @@ class RulesEngine():
     return rules_class.score_it(prospect)
 
   def get_profile_score(self, profile):
-    pass
+    rules_class = self._get_client_rules_engine_by_type_and_name('Profile')()
+    return rules_class.score_it(profile, profile.provider_type)
 
   def get_assigned_entity_score(self, assigned_entity_object):
     pass
