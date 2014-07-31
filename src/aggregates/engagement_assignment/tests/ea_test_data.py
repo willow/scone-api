@@ -5,6 +5,7 @@ from factory import fuzzy
 from functools import partial
 from src.aggregates.client.enums import ClientTypeChoices
 from src.aggregates.client.models import Client
+from src.aggregates.engagement_assignment.models import EngagementAssignment
 from src.aggregates.engagement_opportunity.models import EngagementOpportunity
 from src.aggregates.profile.models import Profile
 from src.aggregates.prospect.models import Prospect
@@ -59,3 +60,13 @@ class EngagementOpportunityFactory(factory.DjangoModelFactory):
   provider_action_type = factory.fuzzy.FuzzyChoice(ProviderActionChoices)
   created_date = factory.fuzzy.FuzzyAttribute(timezone.now)
   system_created_date = factory.fuzzy.FuzzyAttribute(timezone.now)
+
+
+class EngagementAssignmentFactory(factory.DjangoModelFactory):
+  class Meta:
+    model = EngagementAssignment
+
+  engagement_assignment_uid = factory.fuzzy.FuzzyAttribute(str_uid)
+  assignment_attrs = {}
+  system_created_date = factory.fuzzy.FuzzyAttribute(timezone.now)
+  client = factory.SubFactory(ClientFactory)

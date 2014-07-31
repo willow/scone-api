@@ -5,7 +5,7 @@ from src.aggregates.engagement_assignment.calculation.calculation_objects import
 logger = logging.getLogger(__name__)
 
 
-class ProspectRulesEngine(ABC):
+class BaseProspectRulesEngine(ABC):
 
   def score_it(self, prospect):
     prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score(prospect)
