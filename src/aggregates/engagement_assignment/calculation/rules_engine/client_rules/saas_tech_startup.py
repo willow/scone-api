@@ -1,3 +1,6 @@
+from src.aggregates.engagement_assignment.calculation.rules_engine.base_engagement_opportunity_rules_engine import \
+  BaseTwitterEngagementOpportunityRulesEngine, BaseRedditEngagementOpportunityRulesEngine, \
+  BaseLinkedInEngagementOpportunityRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.base_profile_rules_engine import \
   BaseTwitterProfileRulesEngine, BaseLinkedInProfileRulesEngine, BaseRedditProfileRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.base_prospect_rules_engine import \
@@ -23,13 +26,28 @@ class LinkedInProfileRulesEngine(BaseLinkedInProfileRulesEngine):
   def _get_internal_score(self, profile):
     return 0, {}
 
+
+class TwitterEngagementOpportunityRulesEngine(BaseTwitterEngagementOpportunityRulesEngine):
+  def _get_internal_score(self, engagement_opportunity):
+    return 0, {}
+
+
+class RedditEngagementOpportunityRulesEngine(BaseRedditEngagementOpportunityRulesEngine):
+  def _get_internal_score(self, engagement_opportunity):
+    return 0, {}
+
+
+class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunityRulesEngine):
+  def _get_internal_score(self, engagement_opportunity):
+    return 0, {}
+
 #
 # class SaaSTechStartupRulesEngine(BaseRulesEngine):
 # def __init__(self, _demography_service=demography_service):
 # super().__init__()
 # self._demography_service = _demography_service
 #
-#   _important_websites = (
+# _important_websites = (
 #     "linkedin",
 #     "wordpress",
 #     "blogspot",

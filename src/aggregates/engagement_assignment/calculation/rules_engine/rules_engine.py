@@ -1,6 +1,7 @@
 import logging
 from src.aggregates.client.enums import ClientTypeEnum
 from importlib import import_module
+from src.aggregates.engagement_assignment import constants
 from src.apps.engagement_discovery.enums import ProviderChoices
 
 # noinspection PyUnresolvedReferences
@@ -8,6 +9,13 @@ from src.apps.engagement_discovery.enums import ProviderChoices
 from .client_rules import *
 
 logger = logging.getLogger(__name__)
+
+_provider_choices_dict = dict(ProviderChoices)
+
+_assigned_entity_names = {
+  constants.EO: "EngagementOpportunity",
+  constants.PROFILE: "Profile",
+}
 
 
 class RulesEngine():
@@ -23,7 +31,11 @@ class RulesEngine():
     return rules_class.score_it(profile)
 
   def get_assigned_entity_score(self, assigned_entity_object):
-    pass
+    rules_class = self._get_client_rules_engine_by_type_and_name(
+      _assigned_entity_names[assigned_entity_object.entity_type], assigned_entity_object.provider_type
+    )()
+
+    return rules_class.score_it(assigned_entity_object)
 
   def _get_client_rules_engine_by_type_and_name(self, thing_to_score, provider_type=None):
     thing_to_score += "RulesEngine"
@@ -33,7 +45,7 @@ class RulesEngine():
 
     provider_name = ''
     if provider_type:
-      provider_name = dict(ProviderChoices)[provider_type]
+      provider_name = _provider_choices_dict[provider_type]
 
     class_name = "{0}{1}".format(provider_name, thing_to_score)
 

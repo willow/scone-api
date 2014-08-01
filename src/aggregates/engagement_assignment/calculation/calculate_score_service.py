@@ -43,16 +43,18 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   # loop through ae's
   score_attrs['assigned_entities'] = []
   for ae in assigned_entities:
-    ae_score, ae_score_attrs = rules_engine.get_assigned_entity_score(ae)
+    ae_score_object = rules_engine.get_assigned_entity_score(ae)
     score_attrs['assigned_entities'].append({
-      'score': ae_score,
-      'score_attrs': ae_score_attrs,
-      'id': ae.id,
+      'base_score': ae_score_object.base_score,
+      'base_score_attrs': ae_score_object.base_score_attrs,
+      'internal_score': ae_score_object.internal_score,
+      'internal_score_attrs': ae_score_object.internal_score_attrs,
+      'id': ae.assigned_entity_id,
       'entity_type': ae.entity_type,
       'provider_type': ae.provider_type
     })
 
-  return score, score_attrs
+  return 0, score_attrs
 
 
 def get_rules_engine(client):
@@ -99,6 +101,8 @@ def _get_assigned_entities(assignment_attrs):
       else:
         raise ValueError("Invalid assignment attrs")
 
-      assigned_entities.append(CalculationAssignedEntityObject(assigned_entity, entity_type, provider_type, prospect))
+      assigned_entities.append(
+        CalculationAssignedEntityObject(assigned_entity, assigned_entity.id, entity_type, provider_type, prospect)
+      )
 
   return assigned_entities
