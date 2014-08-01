@@ -1,25 +1,33 @@
-from collections import Counter
-from dateutil.relativedelta import relativedelta
-from django.utils import timezone
-from src.aggregates.engagement_assignment import constants
+from src.aggregates.engagement_assignment.calculation.rules_engine.base_profile_rules_engine import \
+  BaseTwitterProfileRulesEngine, BaseLinkedInProfileRulesEngine, BaseRedditProfileRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.base_prospect_rules_engine import \
   BaseProspectRulesEngine
-from src.libs.geo_utils.services import geo_location_service
-from src.libs.nlp_utils.services import demography_service
-from src.libs.nlp_utils.services.enums import GenderEnum
-from src.libs.python_utils.collections import iter_utils
-from src.libs.text_utils.parsers import text_parser
 
 
 class ProspectRulesEngine(BaseProspectRulesEngine):
   def _get_internal_score(self, prospect):
     return 0, {}
 
+
+class TwitterProfileRulesEngine(BaseTwitterProfileRulesEngine):
+  def _get_internal_score(self, profile):
+    return 0, {}
+
+
+class RedditProfileRulesEngine(BaseRedditProfileRulesEngine):
+  def _get_internal_score(self, profile):
+    return 0, {}
+
+
+class LinkedInProfileRulesEngine(BaseLinkedInProfileRulesEngine):
+  def _get_internal_score(self, profile):
+    return 0, {}
+
 #
 # class SaaSTechStartupRulesEngine(BaseRulesEngine):
 # def __init__(self, _demography_service=demography_service):
-#     super().__init__()
-#     self._demography_service = _demography_service
+# super().__init__()
+# self._demography_service = _demography_service
 #
 #   _important_websites = (
 #     "linkedin",

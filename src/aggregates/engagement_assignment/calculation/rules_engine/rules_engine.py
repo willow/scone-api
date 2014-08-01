@@ -1,7 +1,7 @@
 import logging
 from src.aggregates.client.enums import ClientTypeEnum
 from importlib import import_module
-from src.apps.engagement_discovery.enums import ProviderEnum
+from src.apps.engagement_discovery.enums import ProviderChoices
 
 # noinspection PyUnresolvedReferences
 # this is how we can do dynamic imports easily
@@ -19,8 +19,8 @@ class RulesEngine():
     return rules_class.score_it(prospect)
 
   def get_profile_score(self, profile):
-    rules_class = self._get_client_rules_engine_by_type_and_name('Profile')()
-    return rules_class.score_it(profile, profile.provider_type)
+    rules_class = self._get_client_rules_engine_by_type_and_name('Profile', profile.provider_type)()
+    return rules_class.score_it(profile)
 
   def get_assigned_entity_score(self, assigned_entity_object):
     pass
@@ -33,8 +33,7 @@ class RulesEngine():
 
     provider_name = ''
     if provider_type:
-      provider_name = ProviderEnum(provider_type)
-      provider_name = provider_name[0].upper() + provider_name[1:]
+      provider_name = dict(ProviderChoices)[provider_type]
 
     class_name = "{0}{1}".format(provider_name, thing_to_score)
 
