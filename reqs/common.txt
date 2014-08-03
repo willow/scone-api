@@ -18,13 +18,13 @@ email-reply-parser==0.1.9
 sendgrid==0.5.1
 beautifulsoup4==4.3.2
 twython==3.1.2
-git+git://github.com/WiFL-co/requests.git@b59dc76b65fe0bdf7efe76f4e153afc0b01efd74#egg=requests-fork
+git+git://github.com/willow/requests.git@b59dc76b65fe0bdf7efe76f4e153afc0b01efd74#egg=requests-fork
 neo4jrestclient==2.0.2
 gspread==0.2.1
-git+git://github.com/WiFL-co/python-readability#egg=readability
+git+git://github.com/willow/python-readability#egg=readability
 http://www.nltk.org/nltk3-alpha/nltk-3.0a3.tar.gz#egg=nltk
 git+git://github.com/miso-belica/sumy.git#egg=sumy
 praw==2.1.17
 ipython==2.1.0
-git+https://github.com/WiFL-co/python-linkedin#egg=python-linkedin
+git+https://github.com/willow/python-linkedin#egg=python-linkedin
 django-adminplus==0.3

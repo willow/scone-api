@@ -5,8 +5,8 @@ task :deploy_qa_light => ['deploy:set_qa_app', 'deploy:push', 'deploy:tag']
 task :deploy_production_light => ['deploy:set_production_app', 'deploy:push', 'deploy:tag']
 
 namespace :deploy do
-  PRODUCTION_APP = 'wifl-api-prod'
-  QA_APP = 'wifl-api-qa'
+  PRODUCTION_APP = 'scone-api-prod'
+  QA_APP = 'scone-api-qa'
   web_worker = 'web'
   celery_worker = 'worker'
 
