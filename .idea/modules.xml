@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/scohn-api.iml" filepath="$PROJECT_DIR$/scohn-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scone-api.iml" filepath="$PROJECT_DIR$/scone-api.iml" />
     </modules>
   </component>
 </project>
