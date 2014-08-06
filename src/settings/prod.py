@@ -130,13 +130,13 @@ SECRET_KEY = environ['SECRET_KEY']
 
 ########## ALLOWED HOSTS CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['.herokuapp.com', 'api.wifl.com']
+ALLOWED_HOSTS = ['.herokuapp.com', 'api.startwillow.com']
 ########## END ALLOWED HOST CONFIGURATION
 
 
 ########## CORS CONFIGURATION
 CORS_ORIGIN_REGEX_WHITELIST = (
-  '^http(s)?://www.wifl\.com/?',
+  '^http(s)?://www.startwillow\.com/?',
 )
 ########## END CORS CONFIGURATION
 
