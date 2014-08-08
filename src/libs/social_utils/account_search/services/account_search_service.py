@@ -8,10 +8,13 @@ from src.libs.social_utils.account_search.account_search_result_object import Ac
 api_key = settings.FULLCONTACT_API_KEY
 api_endpoint = "https://api.fullcontact.com/v2/person.json"
 
+# reuse a session will use persistent connections
+client = requests.Session()
+
 
 def get_social_account_data(social_network_name, social_account_uid, _iter_utils=iter_utils):
   params = {"apiKey": api_key, "style": "dictionary", social_network_name: social_account_uid}
-  resp = requests.get(api_endpoint, params=params, timeout=settings.HTTP_TIMEOUT)
+  resp = client.get(api_endpoint, params=params, timeout=settings.HTTP_TIMEOUT)
   resp.raise_for_status()
 
   result = resp.json()
