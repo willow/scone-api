@@ -6,9 +6,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def replay_events():
+def replay_events(name=None):
   counter = 0
   rev_events = Event.objects.order_by("pk")
+
+  if name:
+    rev_events = rev_events.filter(name=name)
+
   logger.debug("Replay %i events", rev_events.count())
 
   for rev_event_batch in batch_qs(rev_events):
