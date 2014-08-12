@@ -14,6 +14,6 @@ def test_serializer_serializes_queryset_correctly():
   test_class.save()
   dict_data = {'test_models': FakeTestClass.objects.all()}
 
-  serialized_data = serializer.serialize(dict_data)
+  serialized_data = serializer.default(dict_data)
   deserialized_data = json.loads(serialized_data)
   assert deserialized_data["test_models"][0]["model"] == 'django_utils.faketestclass'

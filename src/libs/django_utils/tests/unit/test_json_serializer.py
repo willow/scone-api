@@ -25,7 +25,7 @@ def test_serializer_serializes_dict_with_model():
                          'formatted_address': 'Nostrand Avenue & Vernon Avenue, Brooklyn, NY 11205, USA',
                          'contact_name': 'bedstuy / clinton hill', 'listing_source': test_class, 'zip_code': '11205'}}
 
-  serialized_data = serializer.serialize(dict_data)
+  serialized_data = serializer.default(dict_data)
   deserialized_data = json.loads(serialized_data)
   x = deserialized_data
 
@@ -34,6 +34,6 @@ def test_serializer_serializes_model_correctly():
   test_class = FakeTestClass(name='Some Name', id=1, url='http://www.test.com', trusted_geo_data=False)
   dict_data = {'test_model': test_class}
 
-  serialized_data = serializer.serialize(dict_data)
+  serialized_data = serializer.default(dict_data)
   deserialized_data = json.loads(serialized_data)
   assert deserialized_data["test_model"]["model"] == 'django_utils.faketestclass'
