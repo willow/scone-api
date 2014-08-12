@@ -12,7 +12,7 @@ from src.libs.common_domain.models import Event
 class Profile(models.Model, AggregateBase):
   profile_uid = models.CharField(max_length=100, unique=True)
   profile_external_id = models.CharField(max_length=2400)
-  profile_attrs = JSONField(blank=True, null=True)
+  profile_attrs = JSONField()
   provider_type = models.PositiveSmallIntegerField(choices=ProviderChoices)
   prospect = models.ForeignKey('prospect.Prospect', related_name="profiles")
   system_created_date = models.DateTimeField()

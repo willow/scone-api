@@ -11,7 +11,7 @@ from src.libs.django_utils.serialization.flexible_json_serializer import JSONSer
 
 class Prospect(models.Model, AggregateBase):
   prospect_uid = models.CharField(max_length=100, unique=True)
-  prospect_attrs = JSONField(blank=True, null=True)
+  prospect_attrs = JSONField()
 
 
   @classmethod

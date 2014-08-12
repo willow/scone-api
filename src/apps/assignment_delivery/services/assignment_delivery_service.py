@@ -47,11 +47,7 @@ def prepare_assignment_for_delivery(assignment):
   else:
     raise ValueError("Invalid assignment attrs")
 
-  # todo - maybe prospect attrs should not be allowed to be null - have to do the `or {}` a lot.
-  attrs = prospect.prospect_attrs or {}
-  if not attrs.get(constants.EMAIL_ADDRESSES):
-    prospect_service.populate_prospect_emails(prospect)
-
+  #todo why is this method here?
 
 def write_assignments_to_drive(assignments, client, _drive_service=drive_service):
   rows = []

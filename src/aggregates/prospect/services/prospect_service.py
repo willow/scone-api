@@ -38,7 +38,7 @@ def save_prospect_from_provider_info(profile_external_id, provider_type):
     ret_val = profile.prospect
   except Profile.DoesNotExist:
     # we could get initial prospect info from a 3rd party api. We could get email addresses, etc.
-    prospect_attrs = None
+    prospect_attrs = {}
     ret_val = factories.construct_prospect_from_attrs(prospect_attrs)
     save_or_update(ret_val)
 
@@ -95,5 +95,11 @@ def manage_prospect_profiles(prospect):
   return prospect
 
 
-def populate_prospect_emails(prospect):
-  "no op"
+def manage_prospect_attrs(prospect, profile):
+  profile_location = profile.profile_attrs.get(constants.LOCATION)
+
+  if profile_location:
+    prospect.update_attrs({constants.LOCATION: profile_location})
+
+  save_or_update(prospect)
+  return prospect

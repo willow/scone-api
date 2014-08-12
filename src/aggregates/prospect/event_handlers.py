@@ -7,3 +7,8 @@ from src.aggregates.profile.signals import created
 def profile_created_callback(**kwargs):
   prospect_id = kwargs['prospect_id']
   prospect_tasks.manage_prospect_profiles_task.delay(prospect_id)
+
+@receiver(created)
+def manage_prospect_attrs_created_callback(**kwargs):
+  prospect_id = kwargs['profile_uid']
+  prospect_tasks.manage_prospect_profiles_task.delay(prospect_id)
