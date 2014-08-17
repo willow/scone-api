@@ -5,7 +5,7 @@ import jsonfield.fields
 
 def update_func(models, schema_editor):
   Prospect = models.get_model("prospect", "Prospect")
-  Prospect.objects.filter(prospect_attrs=None).update(prospect_attrs="{}")
+  Prospect.objects.filter(prospect_attrs=None).update(prospect_attrs={})
 
 
 class Migration(migrations.Migration):

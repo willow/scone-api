@@ -12,5 +12,5 @@ def profile_created_callback(**kwargs):
 @event_idempotent
 @receiver(created)
 def manage_prospect_attrs_created_callback(**kwargs):
-  prospect_id = kwargs['profile_uid']
-  prospect_tasks.manage_prospect_profiles_task.delay(prospect_id)
+  profile_uid = kwargs['profile_uid']
+  prospect_tasks.manage_prospect_attrs_task.delay(profile_uid)
