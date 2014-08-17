@@ -36,7 +36,7 @@ def get_geocoded_address(address_str):
   if not city:
     city = _get_address_component(address_components, 'locality')
 
-  #manhattan is not legally a city, but google geocoder thinks it is.
+  # manhattan is not legally a city, but google geocoder thinks it is.
   if city and city.lower() == 'manhattan': city = 'New York'
 
   state = _get_address_component(address_components, 'administrative_area_level_1')
@@ -45,11 +45,10 @@ def get_geocoded_address(address_str):
   return CompleteAddress(results.latitude, results.longitude, address1, address2, city, state,
                          zip_code, results.formatted_address)
 
+
 def get_country(location):
-  try:
-    results = _geocoder.geocode(location)
-    ret_val = results[0].country
-  except GeocoderError:
-    ret_val = None
+  results = _geocoder.geocode(location)
+
+  ret_val = results[0].country
 
   return ret_val

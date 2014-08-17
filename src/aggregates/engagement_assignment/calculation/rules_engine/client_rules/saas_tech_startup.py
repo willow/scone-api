@@ -8,26 +8,31 @@ from src.aggregates.engagement_assignment.calculation.rules_engine.base_prospect
 
 
 class ProspectRulesEngine(BaseProspectRulesEngine):
-  _important_locations = (
-    "sf",
-    "san fran",
-    "nyc",
-    "new york",
-    "atlanta",
-    "seattle",
-    "philadelphia",
-    "chicago",
-    "los angeles",
-    "dallas",
-    "ft worth",
-    "boston",
-    "boulder",
-    "bend",
-  )
+  @property
+  def _important_locations(self):
+    return (
+      "sf",
+      "san fran",
+      "nyc",
+      "new york",
+      "atlanta",
+      "seattle",
+      "philadelphia",
+      "chicago",
+      "los angeles",
+      "dallas",
+      "ft worth",
+      "boston",
+      "boulder",
+      "bend",
+    )
 
-  _home_countries = (
-    "united states",
-  )
+
+  @property
+  def _important_home_countries(self):
+    return (
+      "united states",
+    )
 
   def _get_internal_score(self, prospect):
     return 0, {}
@@ -70,8 +75,8 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
 #
 # _important_websites = (
 # "linkedin",
-#     "wordpress",
-#     "blogspot",
+# "wordpress",
+# "blogspot",
 #     "about.me",
 #     "ycombinator",
 #     "stackoverflow",
