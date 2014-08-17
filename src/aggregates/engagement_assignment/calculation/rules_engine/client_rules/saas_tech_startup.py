@@ -5,6 +5,7 @@ from src.aggregates.engagement_assignment.calculation.rules_engine.base_profile_
   BaseTwitterProfileRulesEngine, BaseLinkedInProfileRulesEngine, BaseRedditProfileRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.base_prospect_rules_engine import \
   BaseProspectRulesEngine
+from src.libs.nlp_utils.services.enums import GenderEnum
 
 
 class ProspectRulesEngine(BaseProspectRulesEngine):
@@ -38,9 +39,12 @@ class ProspectRulesEngine(BaseProspectRulesEngine):
   def _age_range(self):
     return 20, 40
 
+  @property
+  def _preferred_gender(self):
+    return GenderEnum.male
+
   def _get_internal_score(self, prospect):
     return 0, {}
-
 
 class TwitterProfileRulesEngine(BaseTwitterProfileRulesEngine):
   def _get_internal_score(self, profile):
@@ -82,7 +86,7 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     # "wordpress",
     # "blogspot",
     # "about.me",
-    #     "ycombinator",
+    # "ycombinator",
     #     "stackoverflow",
     #     ".io",
     #   )
@@ -128,18 +132,9 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     #           score += bio_score
     #           counter[constants.BIO] += bio_score
     #       if counter[constants.BIO]: internal_score_attrs[constants.BIO] = counter[constants.BIO]
-    #
-    #     gender = calculation_data[constants.GENDER]
-    #     if gender:
-    #       if gender == GenderEnum.male:
-    #         gender_score = 1
-    #         score += gender_score
-    #         internal_score_attrs[constants.GENDER] = gender_score
-    #
 
-#
 # followers_count = calculation_data[constants.FOLLOWERS_COUNT]
-#     if followers_count and followers_count >= 2500:
+# if followers_count and followers_count >= 2500:
 #       followers_count_score = 1
 #       score += followers_count_score
 #       internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score

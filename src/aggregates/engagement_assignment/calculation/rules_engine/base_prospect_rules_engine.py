@@ -6,6 +6,7 @@ import logging
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
 from src.libs.geo_utils.services import geo_location_service
+from src.libs.nlp_utils.services.enums import GenderEnum
 
 logger = logging.getLogger(__name__)
 
@@ -38,12 +39,16 @@ class BaseProspectRulesEngine(ABC):
     score += age_score
     score_attrs.update(age_score_attrs)
 
+    gender_score, gender_score_attrs = self._apply_gender_score(prospect)
+    score += gender_score
+    score_attrs.update(gender_score_attrs)
+
     return score, score_attrs
 
   # region apply score logic
 
   def _apply_location_score(self, prospect):
-    counter, score, score_attrs = self._get_default_score_items()
+    score, score_attrs, counter = self._get_default_score_items()
 
     location = prospect.prospect_attrs.get(constants.LOCATION)
 
@@ -75,7 +80,7 @@ class BaseProspectRulesEngine(ABC):
     return score, score_attrs
 
   def _apply_age_score(self, prospect):
-    counter, score, score_attrs = self._get_default_score_items()
+    score, score_attrs, counter = self._get_default_score_items()
     age = prospect.prospect_attrs.get(constants.RELATIVE_DOB)
 
     age_min, age_max = self._age_range
@@ -95,6 +100,24 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  def _apply_gender_score(self, prospect):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    gender = prospect.prospect_attrs.get(constants.GENDER)
+
+    preferred_gender = self._preferred_gender
+
+    if preferred_gender:
+      if gender:
+
+        gender = GenderEnum[gender.lower()]
+
+        if gender == preferred_gender:
+          gender_score = 1
+          score += gender_score
+          score_attrs[constants.GENDER] = gender_score
+
+    return score, score_attrs
 
   # endregion apply score logic
 
@@ -116,8 +139,12 @@ class BaseProspectRulesEngine(ABC):
   def _age_range(self):
     return (None, None)
 
+  @property
+  def _preferred_gender(self):
+    return None
+
   # endregion define prospect scoring attrs
 
   def _get_default_score_items(self):
     score, score_attrs, counter = 0, {}, Counter()
-    return counter, score, score_attrs
+    return score, score_attrs, counter
