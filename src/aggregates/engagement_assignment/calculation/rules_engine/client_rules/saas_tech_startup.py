@@ -136,15 +136,6 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     #         score += gender_score
     #         internal_score_attrs[constants.GENDER] = gender_score
     #
-    age = calculation_data[constants.RELATIVE_DOB]
-    if age:
-      age_years = relativedelta(timezone.now(), age).years
-      if 20 <= age_years <= 40:
-        age_score = 1
-        score += age_score
-        counter[constants.RELATIVE_DOB] += age_score
-        if counter[constants.RELATIVE_DOB]: internal_score_attrs[constants.RELATIVE_DOB] = counter[
-          constants.RELATIVE_DOB]
 
 #
 # followers_count = calculation_data[constants.FOLLOWERS_COUNT]

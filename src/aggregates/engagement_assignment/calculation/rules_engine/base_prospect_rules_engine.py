@@ -40,6 +40,7 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  # region apply score logic
 
   def _apply_location_score(self, prospect):
     counter, score, score_attrs = self._get_default_score_items()
@@ -95,15 +96,17 @@ class BaseProspectRulesEngine(ABC):
     return score, score_attrs
 
 
+  # endregion apply score logic
+
   @abstractmethod
   def _get_internal_score(self, prospect):
     """Get the client-specific rules"""
 
+  # region define prospect scoring attrs
 
   @property
   def _important_locations(self):
     return ()
-
 
   @property
   def _important_home_countries(self):
@@ -112,6 +115,8 @@ class BaseProspectRulesEngine(ABC):
   @property
   def _age_range(self):
     return (None, None)
+
+  # endregion define prospect scoring attrs
 
   def _get_default_score_items(self):
     score, score_attrs, counter = 0, {}, Counter()
