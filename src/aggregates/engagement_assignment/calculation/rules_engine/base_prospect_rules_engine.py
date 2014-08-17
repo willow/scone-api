@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import Counter
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 import logging
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
@@ -31,6 +33,10 @@ class BaseProspectRulesEngine(ABC):
     location_score, location_score_attrs = self._apply_location_score(prospect)
     score += location_score
     score_attrs.update(location_score_attrs)
+
+    age_score, age_score_attrs = self._apply_age_score(prospect)
+    score += age_score
+    score_attrs.update(age_score_attrs)
 
     return score, score_attrs
 
@@ -67,6 +73,27 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  def _apply_age_score(self, prospect):
+    counter, score, score_attrs = self._get_default_score_items()
+    age = prospect.prospect_attrs.get(constants.RELATIVE_DOB)
+
+    age_min, age_max = self._age_range
+
+    if age_min and age_max:
+      if age:
+
+        age_years = relativedelta(timezone.now(), age).years
+
+        if age_min <= age_years <= age_max:
+          age_score = 1
+          score += age_score
+
+          counter[constants.RELATIVE_DOB] += age_score
+
+          if counter[constants.RELATIVE_DOB]: score_attrs[constants.RELATIVE_DOB] = counter[constants.RELATIVE_DOB]
+
+    return score, score_attrs
+
 
   @abstractmethod
   def _get_internal_score(self, prospect):
@@ -81,6 +108,10 @@ class BaseProspectRulesEngine(ABC):
   @property
   def _important_home_countries(self):
     return ()
+
+  @property
+  def _age_range(self):
+    return (None, None)
 
   def _get_default_score_items(self):
     score, score_attrs, counter = 0, {}, Counter()
