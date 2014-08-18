@@ -15,6 +15,8 @@ from src.aggregates.engagement_assignment.calculation.rules_engine \
 from src.aggregates.engagement_assignment.calculation.rules_engine \
   .appointment_finding_tech_startup_client_rules_engine import \
   AppointmentFindingTechStartupClientRulesEngine
+from src.aggregates.engagement_assignment.calculation.rules_engine.bitcoin_philippines_startup_rules_engine import \
+  BitcoinPhilippinesStartupRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.food_lover_tech_startup_rules_engine import \
   FoodLoverTechStartupRulesEngine
 from src.aggregates.engagement_assignment.calculation.rules_engine.marketing_startup_rules_engine import \
@@ -106,5 +108,7 @@ def get_rules_engine(client):
     return YAWritingMeetupRulesEngine()
   elif client.client_type == ClientTypeEnum.food_lover_startup_rules_engine:
     return FoodLoverTechStartupRulesEngine()
+  elif client.client_type == ClientTypeEnum.bitcoin_philippines_startup_rules_engine:
+    return BitcoinPhilippinesStartupRulesEngine()
 
   raise ValueError("No rules exist for this client")

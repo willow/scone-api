@@ -12,6 +12,7 @@ class ClientTypeEnum(IntEnum):
   sports_meetup_tech_startup_rules_engine = 8
   ya_writing_meetup_rules_engine = 9
   food_lover_startup_rules_engine = 10
+  bitcoin_philippines_startup_rules_engine = 11
 
 
 ClientTypeChoices = (
@@ -28,4 +29,5 @@ ClientTypeChoices = (
   (ClientTypeEnum.sports_meetup_tech_startup_rules_engine.value, 'tech startup (sports meetup)'),
   (ClientTypeEnum.ya_writing_meetup_rules_engine.value, 'ya writing meetup'),
   (ClientTypeEnum.food_lover_startup_rules_engine.value, 'tech startup (food lovers)'),
+  (ClientTypeEnum.bitcoin_philippines_startup_rules_engine.value, 'bitcoin startup (philippines)'),
 )
