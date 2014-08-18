@@ -57,6 +57,18 @@ class ProspectRulesEngine(BaseProspectRulesEngine):
       "startup",
     )
 
+  @property
+  def _important_websites(self):
+    return (
+      "linkedin",
+      "wordpress",
+      "blogspot",
+      "about.me",
+      "ycombinator",
+      "stackoverflow",
+      ".io",
+    )
+
   def _get_internal_score(self, prospect):
     return 0, {}
 
@@ -103,8 +115,8 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     # "about.me",
     # "ycombinator",
     # "stackoverflow",
-    #     ".io",
-    #   )
+    # ".io",
+    # )
     #
     #   _important_bio_keywords = iter_utils.stemmify_iterable((
     #     "ceo",
@@ -143,8 +155,8 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
 # followers_count = calculation_data[constants.FOLLOWERS_COUNT]
 # if followers_count and followers_count >= 2500:
 # followers_count_score = 1
-#       score += followers_count_score
-#       internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score
+# score += followers_count_score
+# internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score
 
 #
 #     internal_score_attrs[constants.SCORE] = score

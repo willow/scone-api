@@ -51,6 +51,10 @@ class BaseProspectRulesEngine(ABC):
     score += bio_score
     score_attrs.update(bio_score_attrs)
 
+    website_score, website_score_attrs = self._apply_website_score(prospect)
+    score += website_score
+    score_attrs.update(website_score_attrs)
+
     return score, score_attrs
 
   # region apply score logic
@@ -151,6 +155,28 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  def _apply_website_score(self, prospect):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    websites = prospect.prospect_attrs.get(constants.WEBSITES)
+
+    important_websites = self._important_websites
+
+    if important_websites:
+
+      if websites:
+
+        website_score = 1
+
+        for ws in important_websites:
+          if any(domain in ws.lower() for domain in self._important_websites):
+            score += website_score
+            counter[constants.WEBSITES] += website_score
+
+        if counter[constants.WEBSITES]: score_attrs[constants.WEBSITES] = counter[constants.WEBSITES]
+
+    return score, score_attrs
+
   # endregion apply score logic
 
   @abstractmethod
@@ -177,6 +203,10 @@ class BaseProspectRulesEngine(ABC):
 
   @property
   def _important_bio_keywords(self):
+    return ()
+
+  @property
+  def _important_websites(self):
     return ()
 
   # endregion define prospect scoring attrs
