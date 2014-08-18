@@ -7,15 +7,19 @@ from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
 from src.libs.geo_utils.services import geo_location_service
 from src.libs.nlp_utils.services.enums import GenderEnum
+from src.libs.python_utils.collections import iter_utils
 
 logger = logging.getLogger(__name__)
 
 
 class BaseProspectRulesEngine(ABC):
-  def __init__(self, _geo_location_service=None):
+  def __init__(self, _geo_location_service=None, _iter_utils=None):
 
     if not _geo_location_service: _geo_location_service = geo_location_service
     self._geo_location_service = _geo_location_service
+
+    if not _iter_utils: _iter_utils = iter_utils
+    self._iter_utils = _iter_utils
 
   def score_it(self, prospect):
     prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score(prospect)
@@ -42,6 +46,10 @@ class BaseProspectRulesEngine(ABC):
     gender_score, gender_score_attrs = self._apply_gender_score(prospect)
     score += gender_score
     score_attrs.update(gender_score_attrs)
+
+    bio_score, bio_score_attrs = self._apply_bio_score(prospect)
+    score += bio_score
+    score_attrs.update(bio_score_attrs)
 
     return score, score_attrs
 
@@ -119,6 +127,30 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  def _apply_bio_score(self, prospect):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    bio = prospect.prospect_attrs.get(constants.BIO)
+
+    if bio:
+      bio_keywords = self._important_bio_keywords
+
+      if bio_keywords:
+        bio_keywords = self._iter_utils.stemmify_iterable(bio_keywords)
+
+        bio_score = 1
+
+        bio = self._iter_utils.stemmify_string(bio)
+
+        for kw in bio_keywords:
+          if kw in bio:
+            score += bio_score
+            counter[constants.BIO] += bio_score
+
+        if counter[constants.BIO]: score_attrs[constants.BIO] = counter[constants.BIO]
+
+    return score, score_attrs
+
   # endregion apply score logic
 
   @abstractmethod
@@ -142,6 +174,10 @@ class BaseProspectRulesEngine(ABC):
   @property
   def _preferred_gender(self):
     return None
+
+  @property
+  def _important_bio_keywords(self):
+    return ()
 
   # endregion define prospect scoring attrs
 

@@ -43,8 +43,23 @@ class ProspectRulesEngine(BaseProspectRulesEngine):
   def _preferred_gender(self):
     return GenderEnum.male
 
+  @property
+  def _important_bio_keywords(self):
+    return (
+      "ceo",
+      "cto",
+      "software",
+      "developer",
+      "engineer",
+      "programmer",
+      "writer",
+      "founder",
+      "startup",
+    )
+
   def _get_internal_score(self, prospect):
     return 0, {}
+
 
 class TwitterProfileRulesEngine(BaseTwitterProfileRulesEngine):
   def _get_internal_score(self, profile):
@@ -87,7 +102,7 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     # "blogspot",
     # "about.me",
     # "ycombinator",
-    #     "stackoverflow",
+    # "stackoverflow",
     #     ".io",
     #   )
     #
@@ -123,19 +138,11 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     #       if counter[constants.PROFILE_WEBSITES]: internal_score_attrs[constants.PROFILE_WEBSITES] = counter[
     #         constants.PROFILE_WEBSITES]
     #
-    #     bio = calculation_data[constants.BIO]
-    #     if bio:
-    #       bio_score = 1
-    #       bio = _iter_utils.stemmify_string(bio)
-    #       for kw in self._important_bio_keywords:
-    #         if kw in bio:
-    #           score += bio_score
-    #           counter[constants.BIO] += bio_score
-    #       if counter[constants.BIO]: internal_score_attrs[constants.BIO] = counter[constants.BIO]
+
 
 # followers_count = calculation_data[constants.FOLLOWERS_COUNT]
 # if followers_count and followers_count >= 2500:
-#       followers_count_score = 1
+# followers_count_score = 1
 #       score += followers_count_score
 #       internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score
 
