@@ -108,27 +108,7 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     # super().__init__()
     # self._demography_service = _demography_service
     #
-    # _important_websites = (
-    # "linkedin",
-    # "wordpress",
-    # "blogspot",
-    # "about.me",
-    # "ycombinator",
-    # "stackoverflow",
-    # ".io",
-    # )
-    #
-    #   _important_bio_keywords = iter_utils.stemmify_iterable((
-    #     "ceo",
-    #     "cto",
-    #     "software",
-    #     "developer",
-    #     "engineer",
-    #     "programmer",
-    #     "writer",
-    #     "founder",
-    #     "startup",
-    #   ))
+
     #
     #
     #
@@ -142,13 +122,7 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     #
     #     profile_websites = calculation_data[constants.PROFILE_WEBSITES]
     #     if profile_websites:
-    #       website_score = 1
-    #       for ws in profile_websites:
-    #         if any(domain in ws.lower() for domain in self._important_websites):
-    #           score += website_score
-    #           counter[constants.PROFILE_WEBSITES] += website_score
-    #       if counter[constants.PROFILE_WEBSITES]: internal_score_attrs[constants.PROFILE_WEBSITES] = counter[
-    #         constants.PROFILE_WEBSITES]
+
     #
 
 
