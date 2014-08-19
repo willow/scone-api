@@ -65,7 +65,7 @@ class BaseProspectRulesEngine(ABC):
     location = prospect.prospect_attrs.get(constants.LOCATION)
 
     if location:
-      location_score = 1
+      location_score = self._location_score
 
       try:
         country = self._geo_location_service.get_country(location)
@@ -103,7 +103,7 @@ class BaseProspectRulesEngine(ABC):
         age_years = relativedelta(timezone.now(), age).years
 
         if age_min <= age_years <= age_max:
-          age_score = 1
+          age_score = self._age_score
           score += age_score
 
           counter[constants.RELATIVE_DOB] += age_score
@@ -125,7 +125,7 @@ class BaseProspectRulesEngine(ABC):
         gender = GenderEnum[gender.lower()]
 
         if gender == preferred_gender:
-          gender_score = 1
+          gender_score = self._gender_score
           score += gender_score
           score_attrs[constants.GENDER] = gender_score
 
@@ -142,7 +142,7 @@ class BaseProspectRulesEngine(ABC):
       if bio_keywords:
         bio_keywords = self._iter_utils.stemmify_iterable(bio_keywords)
 
-        bio_score = 1
+        bio_score = self._bio_score
 
         bio = self._iter_utils.stemmify_string(bio)
 
@@ -166,7 +166,7 @@ class BaseProspectRulesEngine(ABC):
 
       if websites:
 
-        website_score = 1
+        website_score = self._website_score
 
         for ws in important_websites:
           if any(domain in ws.lower() for domain in self._important_websites):
@@ -190,6 +190,10 @@ class BaseProspectRulesEngine(ABC):
     return ()
 
   @property
+  def _location_score(self):
+    return 1
+
+  @property
   def _important_home_countries(self):
     return ()
 
@@ -198,16 +202,32 @@ class BaseProspectRulesEngine(ABC):
     return (None, None)
 
   @property
+  def _age_score(self):
+    return 1
+
+  @property
   def _preferred_gender(self):
     return None
+
+  @property
+  def _gender_score(self):
+    return 1
 
   @property
   def _important_bio_keywords(self):
     return ()
 
   @property
+  def _bio_score(self):
+    return 1
+
+  @property
   def _important_websites(self):
     return ()
+
+  @property
+  def _website_score(self):
+    return 1
 
   # endregion define prospect scoring attrs
 
