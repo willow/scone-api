@@ -55,6 +55,10 @@ class BaseProspectRulesEngine(ABC):
     score += website_score
     score_attrs.update(website_score_attrs)
 
+    email_score, email_score_attrs = self._apply_email_score(prospect)
+    score += email_score
+    score_attrs.update(email_score_attrs)
+
     return score, score_attrs
 
   # region apply score logic
@@ -177,6 +181,19 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
+  def _apply_email_score(self, prospect):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    email_addresses = prospect.prospect_attrs.get(constants.EMAIL_ADDRESSES)
+
+    if email_addresses:
+      score += self._email_score
+      counter[constants.WEBSITES] += self._website_score
+
+    if counter[constants.WEBSITES]: score_attrs[constants.WEBSITES] = counter[constants.WEBSITES]
+
+    return score, score_attrs
+
   # endregion apply score logic
 
   @abstractmethod
@@ -227,6 +244,10 @@ class BaseProspectRulesEngine(ABC):
 
   @property
   def _website_score(self):
+    return 1
+
+  @property
+  def _email_score(self):
     return 1
 
   # endregion define prospect scoring attrs
