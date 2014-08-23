@@ -29,7 +29,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
 
   rules_engine = RulesEngine(client)
 
-  prospect_score_object = rules_engine.get_prospect_score(prospect)
+  prospect_score_object = rules_engine.get_prospect_score(prospect, calc_data)
   score_attrs['prospect'] = {
     'base_score': prospect_score_object.base_score,
     'base_score_attrs': prospect_score_object.base_score_attrs,

@@ -69,7 +69,7 @@ class ProspectRulesEngine(BaseProspectRulesEngine):
       ".io",
     )
 
-  def _get_internal_score(self, prospect):
+  def _get_internal_score(self, prospect, calc_data):
     return 0, {}
 
 
@@ -113,9 +113,9 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
     #
     #
     #
-    #   def _get_internal_score(self, calculation_data, _iter_utils=iter_utils,
+    # def _get_internal_score(self, calculation_data, _iter_utils=iter_utils,
     # _geolocation_service=geo_location_service,
-    #                           _text_parser=text_parser):
+    # _text_parser=text_parser):
     #     score = 0
     #     internal_score_attrs = {}
     #     counter = Counter()
@@ -133,9 +133,9 @@ class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunity
 # internal_score_attrs[constants.FOLLOWERS_COUNT] = followers_count_score
 
 #
-#     internal_score_attrs[constants.SCORE] = score
+# internal_score_attrs[constants.SCORE] = score
 #
-#     return score, internal_score_attrs
+# return score, internal_score_attrs
 #
 #   def get_final_score(self, score_attrs):
 #     scores = [x['score'] for x in score_attrs]

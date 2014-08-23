@@ -21,9 +21,9 @@ class BaseProspectRulesEngine(ABC):
     if not _iter_utils: _iter_utils = iter_utils
     self._iter_utils = _iter_utils
 
-  def score_it(self, prospect):
-    prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score(prospect)
-    prospect_base_score, prospect_base_score_attrs = self._apply_base_score(prospect)
+  def score_it(self, prospect, calc_data):
+    prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score(prospect, calc_data)
+    prospect_base_score, prospect_base_score_attrs = self._apply_base_score(prospect, calc_data)
 
     ret_val = RulesEngineScoredObject(
       prospect_internal_score, prospect_internal_score_attrs,
@@ -32,7 +32,7 @@ class BaseProspectRulesEngine(ABC):
 
     return ret_val
 
-  def _apply_base_score(self, prospect):
+  def _apply_base_score(self, prospect, calc_data):
     score, score_attrs = 0, {}
 
     location_score, location_score_attrs = self._apply_location_score(prospect)
@@ -197,7 +197,7 @@ class BaseProspectRulesEngine(ABC):
   # endregion apply score logic
 
   @abstractmethod
-  def _get_internal_score(self, prospect):
+  def _get_internal_score(self, prospect, calc_data):
     """Get the client-specific rules"""
 
   # region define prospect scoring attrs
