@@ -5,10 +5,12 @@ from src.aggregates.profile.models import Profile
 from src.aggregates.topic.enums import TopicCategoryEnum
 
 
-def provide_stemmed_keywords(client, assigned_entities):
+def provide_stemmed_keywords(client, assigned_calc_objects):
   ret_val = []
 
-  for assigned_entity in assigned_entities:
+  for calc_obj in assigned_calc_objects:
+
+    assigned_entity = calc_obj.assigned_entity
 
     if isinstance(assigned_entity, Profile):
       profile = assigned_entity
