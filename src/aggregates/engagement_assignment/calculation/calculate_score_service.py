@@ -1,10 +1,22 @@
 from src.aggregates.engagement_assignment import constants
 
 from src.aggregates.client.enums import ClientTypeEnum
+from src.aggregates.engagement_assignment.calculation import calculate_data_service
 from src.aggregates.engagement_assignment.calculation.calculation_objects import CalculationAssignedEntityObject
 from src.aggregates.engagement_assignment.calculation.rules_engine.rules_engine import RulesEngine
 from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
 from src.aggregates.profile.services import profile_service
+
+
+def _get_calc_data(assigned_entities, client, _calc_data_service=None):
+  if not _calc_data_service: _calc_data_service = calculate_data_service
+  ret_val = {}
+
+  stemmed_keywords = _calc_data_service.provide_stemmed_keywords(client, assigned_entities)
+
+  ret_val[constants.STEMMED_TA_TOPIC_KEYWORDS] = stemmed_keywords
+
+  return ret_val
 
 
 def calculate_engagement_assignment_score(client, assignment_attrs):
@@ -12,6 +24,8 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
 
   assigned_entities = _get_assigned_entities(assignment_attrs)
   prospect = assigned_entities[0].prospect
+
+  calc_data = _get_calc_data(assigned_entities, client)
 
   rules_engine = RulesEngine(client)
 
