@@ -85,7 +85,7 @@ class BaseProspectRulesEngine(ABC):
         for home_country in self._important_home_countries:
           if country in home_country:
             score += location_score
-            counter[constants.LOCATION] += location_score
+            counter[constants.LOCATION_SCORE] += location_score
 
       location = location.lower()
 
@@ -93,9 +93,9 @@ class BaseProspectRulesEngine(ABC):
         score += location_score
         # todo why are we storing a counter?it doesn't make sense if we only use one key in this dict. I guess it
         # maekse sense if we store one key for `City` and one for `State`.
-        counter[constants.LOCATION] += location_score
+        counter[constants.LOCATION_SCORE] += location_score
 
-      if counter[constants.LOCATION]: score_attrs[constants.LOCATION] = counter[constants.LOCATION]
+      if counter[constants.LOCATION_SCORE]: score_attrs[constants.LOCATION_SCORE] = counter[constants.LOCATION_SCORE]
 
     return score, score_attrs
 
@@ -114,9 +114,10 @@ class BaseProspectRulesEngine(ABC):
           age_score = self._age_score
           score += age_score
 
-          counter[constants.RELATIVE_DOB] += age_score
+          counter[constants.RELATIVE_DOB_SCORE] += age_score
 
-          if counter[constants.RELATIVE_DOB]: score_attrs[constants.RELATIVE_DOB] = counter[constants.RELATIVE_DOB]
+          if counter[constants.RELATIVE_DOB_SCORE]:
+            score_attrs[constants.RELATIVE_DOB_SCORE] = counter[constants.RELATIVE_DOB_SCORE]
 
     return score, score_attrs
 
@@ -135,7 +136,7 @@ class BaseProspectRulesEngine(ABC):
         if gender == preferred_gender:
           gender_score = self._gender_score
           score += gender_score
-          score_attrs[constants.GENDER] = gender_score
+          score_attrs[constants.GENDER_SCORE] = gender_score
 
     return score, score_attrs
 
@@ -157,9 +158,10 @@ class BaseProspectRulesEngine(ABC):
         for kw in bio_keywords:
           if kw in bio:
             score += bio_score
-            counter[constants.BIO] += bio_score
+            counter[constants.BIO_IMPORTANT_KEYWORD_SCORE] += bio_score
 
-        if counter[constants.BIO]: score_attrs[constants.BIO] = counter[constants.BIO]
+        if counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]:
+          score_attrs[constants.BIO_IMPORTANT_KEYWORD_SCORE] = counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]
 
     return score, score_attrs
 
@@ -179,9 +181,10 @@ class BaseProspectRulesEngine(ABC):
         for ws in important_websites:
           if any(domain in ws.lower() for domain in self._important_websites):
             score += website_score
-            counter[constants.WEBSITES] += website_score
+            counter[constants.WEBSITES_SCORE] += website_score
 
-        if counter[constants.WEBSITES]: score_attrs[constants.WEBSITES] = counter[constants.WEBSITES]
+        if counter[constants.WEBSITES_SCORE]:
+          score_attrs[constants.WEBSITES_SCORE] = counter[constants.WEBSITES_SCORE]
 
     return score, score_attrs
 
@@ -192,9 +195,10 @@ class BaseProspectRulesEngine(ABC):
 
     if email_addresses:
       score += self._email_score
-      counter[constants.WEBSITES] += self._website_score
+      counter[constants.EMAIL_ADDRESSES_SCORE] += self._email_score
 
-    if counter[constants.WEBSITES]: score_attrs[constants.WEBSITES] = counter[constants.WEBSITES]
+    if counter[constants.EMAIL_ADDRESSES_SCORE]:
+      score_attrs[constants.EMAIL_ADDRESSES_SCORE] = counter[constants.EMAIL_ADDRESSES_SCORE]
 
     return score, score_attrs
 
