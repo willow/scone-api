@@ -34,3 +34,7 @@ def provide_stemmed_keywords(client, assigned_calc_objects):
         ret_val.append(keywords_topic.subtopic_attrs[constants.SNOWBALL_STEM])
 
   return list(set(ret_val))
+
+
+def provide_client_uid(client):
+  return client.client_uid

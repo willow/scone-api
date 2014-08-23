@@ -13,8 +13,10 @@ def _get_calc_data(assigned_calc_objects, client, _calc_data_service=None):
   ret_val = {}
 
   stemmed_keywords = _calc_data_service.provide_stemmed_keywords(client, assigned_calc_objects)
-
   ret_val[constants.STEMMED_TA_TOPIC_KEYWORDS] = stemmed_keywords
+
+  client_uid = _calc_data_service.provide_client_uid(client)
+  ret_val[constants.CLIENT_UID] = client_uid
 
   return ret_val
 

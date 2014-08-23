@@ -6,6 +6,7 @@ import logging
 
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
+from src.apps.domain.engagement_assignment.services import assigned_prospect_service
 from src.libs.geo_utils.services import geo_location_service
 from src.libs.nlp_utils.services.enums import GenderEnum
 from src.libs.python_utils.collections import iter_utils
@@ -15,7 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class BaseProspectRulesEngine(ABC):
-  def __init__(self, prospect, calc_data, _geo_location_service=None, _iter_utils=None):
+  def __init__(
+      self, prospect, calc_data,
+      _geo_location_service=None, _iter_utils=None, _assigned_prospect_service=None):
+
     self.prospect = prospect
     self.calc_data = calc_data
 
@@ -24,6 +28,9 @@ class BaseProspectRulesEngine(ABC):
 
     if not _iter_utils: _iter_utils = iter_utils
     self._iter_utils = _iter_utils
+
+    if not _assigned_prospect_service: _assigned_prospect_service = assigned_prospect_service
+    self._assigned_prospect_service = _assigned_prospect_service
 
   def score_it(self):
     prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score()
@@ -63,6 +70,10 @@ class BaseProspectRulesEngine(ABC):
     score += email_score
     score_attrs.update(email_score_attrs)
 
+    prospect_assignment_score, prospect_assignment_score_attrs = self._apply_prospect_assignment_score()
+    score += prospect_assignment_score
+    score_attrs.update(prospect_assignment_score_attrs)
+
     return score, score_attrs
 
   # region apply score logic
@@ -91,8 +102,6 @@ class BaseProspectRulesEngine(ABC):
 
       if any(loc in location for loc in self._important_locations):
         score += location_score
-        # todo why are we storing a counter?it doesn't make sense if we only use one key in this dict. I guess it
-        # maekse sense if we store one key for `City` and one for `State`.
         counter[constants.LOCATION_SCORE] += location_score
 
       if counter[constants.LOCATION_SCORE]: score_attrs[constants.LOCATION_SCORE] = counter[constants.LOCATION_SCORE]
@@ -162,9 +171,9 @@ class BaseProspectRulesEngine(ABC):
           score_attrs[constants.BIO_CLIENT_TOPIC_SCORE] = counter[constants.BIO_CLIENT_TOPIC_SCORE]
 
       "pycharm doesn't recognize endregion"
-      #endregion client topic
+      # endregion client topic
 
-      #region important keywords
+      # region important keywords
       bio_keywords = self._important_bio_keywords
 
       if bio_keywords:
@@ -181,7 +190,7 @@ class BaseProspectRulesEngine(ABC):
           score_attrs[constants.BIO_IMPORTANT_KEYWORD_SCORE] = counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]
 
       "pycharm doesn't recognize endregion"
-      #endregion important keywords
+      # endregion important keywords
 
     return score, score_attrs
 
@@ -219,6 +228,25 @@ class BaseProspectRulesEngine(ABC):
 
     if counter[constants.EMAIL_ADDRESSES_SCORE]:
       score_attrs[constants.EMAIL_ADDRESSES_SCORE] = counter[constants.EMAIL_ADDRESSES_SCORE]
+
+    return score, score_attrs
+
+
+  def _apply_prospect_assignment_score(self):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    client_uid = self.calc_data[constants.CLIENT_UID]
+    prospect_uid = self.prospect.prospect_uid
+
+    try:
+      self._assigned_prospect_service.get_assigned_prospect_from_attrs(client_uid, prospect_uid)
+    except:
+      new_prospect_score = self._new_prospect_score
+      score += new_prospect_score
+      score_attrs[constants.NEW_PROSPECT_SCORE] = new_prospect_score
+      logger.debug("new assigned prospect. client_uid: %s prospect_uid: %s", client_uid, prospect_uid)
+    else:
+      logger.debug("existing assigned prospect. client_uid: %s prospect_uid: %s", client_uid, prospect_uid)
 
     return score, score_attrs
 
@@ -280,6 +308,10 @@ class BaseProspectRulesEngine(ABC):
 
   @property
   def _email_score(self):
+    return 1
+
+  @property
+  def _new_prospect_score(self):
     return 1
 
   # endregion define prospect scoring attrs
