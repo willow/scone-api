@@ -3,17 +3,21 @@ from collections import Counter
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 import logging
+
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
 from src.libs.geo_utils.services import geo_location_service
 from src.libs.nlp_utils.services.enums import GenderEnum
 from src.libs.python_utils.collections import iter_utils
 
+
 logger = logging.getLogger(__name__)
 
 
 class BaseProspectRulesEngine(ABC):
-  def __init__(self, _geo_location_service=None, _iter_utils=None):
+  def __init__(self, prospect, calc_data, _geo_location_service=None, _iter_utils=None):
+    self.prospect = prospect
+    self.calc_data = calc_data
 
     if not _geo_location_service: _geo_location_service = geo_location_service
     self._geo_location_service = _geo_location_service
@@ -21,9 +25,9 @@ class BaseProspectRulesEngine(ABC):
     if not _iter_utils: _iter_utils = iter_utils
     self._iter_utils = _iter_utils
 
-  def score_it(self, prospect, calc_data):
-    prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score(prospect, calc_data)
-    prospect_base_score, prospect_base_score_attrs = self._apply_base_score(prospect, calc_data)
+  def score_it(self):
+    prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score()
+    prospect_base_score, prospect_base_score_attrs = self._apply_base_score()
 
     ret_val = RulesEngineScoredObject(
       prospect_internal_score, prospect_internal_score_attrs,
@@ -32,30 +36,30 @@ class BaseProspectRulesEngine(ABC):
 
     return ret_val
 
-  def _apply_base_score(self, prospect, calc_data):
+  def _apply_base_score(self):
     score, score_attrs = 0, {}
 
-    location_score, location_score_attrs = self._apply_location_score(prospect)
+    location_score, location_score_attrs = self._apply_location_score()
     score += location_score
     score_attrs.update(location_score_attrs)
 
-    age_score, age_score_attrs = self._apply_age_score(prospect)
+    age_score, age_score_attrs = self._apply_age_score()
     score += age_score
     score_attrs.update(age_score_attrs)
 
-    gender_score, gender_score_attrs = self._apply_gender_score(prospect)
+    gender_score, gender_score_attrs = self._apply_gender_score()
     score += gender_score
     score_attrs.update(gender_score_attrs)
 
-    bio_score, bio_score_attrs = self._apply_bio_score(prospect)
+    bio_score, bio_score_attrs = self._apply_bio_score()
     score += bio_score
     score_attrs.update(bio_score_attrs)
 
-    website_score, website_score_attrs = self._apply_website_score(prospect)
+    website_score, website_score_attrs = self._apply_website_score()
     score += website_score
     score_attrs.update(website_score_attrs)
 
-    email_score, email_score_attrs = self._apply_email_score(prospect)
+    email_score, email_score_attrs = self._apply_email_score()
     score += email_score
     score_attrs.update(email_score_attrs)
 
@@ -63,10 +67,10 @@ class BaseProspectRulesEngine(ABC):
 
   # region apply score logic
 
-  def _apply_location_score(self, prospect):
+  def _apply_location_score(self):
     score, score_attrs, counter = self._get_default_score_items()
 
-    location = prospect.prospect_attrs.get(constants.LOCATION)
+    location = self.prospect.prospect_attrs.get(constants.LOCATION)
 
     if location:
       location_score = self._location_score
@@ -95,9 +99,9 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
-  def _apply_age_score(self, prospect):
+  def _apply_age_score(self):
     score, score_attrs, counter = self._get_default_score_items()
-    age = prospect.prospect_attrs.get(constants.RELATIVE_DOB)
+    age = self.prospect.prospect_attrs.get(constants.RELATIVE_DOB)
 
     age_min, age_max = self._age_range
 
@@ -116,10 +120,10 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
-  def _apply_gender_score(self, prospect):
+  def _apply_gender_score(self):
     score, score_attrs, counter = self._get_default_score_items()
 
-    gender = prospect.prospect_attrs.get(constants.GENDER)
+    gender = self.prospect.prospect_attrs.get(constants.GENDER)
 
     preferred_gender = self._preferred_gender
 
@@ -135,10 +139,10 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
-  def _apply_bio_score(self, prospect):
+  def _apply_bio_score(self):
     score, score_attrs, counter = self._get_default_score_items()
 
-    bio = prospect.prospect_attrs.get(constants.BIO)
+    bio = self.prospect.prospect_attrs.get(constants.BIO)
 
     if bio:
       bio_keywords = self._important_bio_keywords
@@ -159,10 +163,10 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
-  def _apply_website_score(self, prospect):
+  def _apply_website_score(self):
     score, score_attrs, counter = self._get_default_score_items()
 
-    websites = prospect.prospect_attrs.get(constants.WEBSITES)
+    websites = self.prospect.prospect_attrs.get(constants.WEBSITES)
 
     important_websites = self._important_websites
 
@@ -181,10 +185,10 @@ class BaseProspectRulesEngine(ABC):
 
     return score, score_attrs
 
-  def _apply_email_score(self, prospect):
+  def _apply_email_score(self):
     score, score_attrs, counter = self._get_default_score_items()
 
-    email_addresses = prospect.prospect_attrs.get(constants.EMAIL_ADDRESSES)
+    email_addresses = self.prospect.prospect_attrs.get(constants.EMAIL_ADDRESSES)
 
     if email_addresses:
       score += self._email_score
@@ -197,7 +201,7 @@ class BaseProspectRulesEngine(ABC):
   # endregion apply score logic
 
   @abstractmethod
-  def _get_internal_score(self, prospect, calc_data):
+  def _get_internal_score(self):
     """Get the client-specific rules"""
 
   # region define prospect scoring attrs

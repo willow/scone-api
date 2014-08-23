@@ -23,8 +23,11 @@ class RulesEngine():
     self.client = client
 
   def get_prospect_score(self, prospect, calc_data):
-    rules_class = self._get_client_rules_engine_by_type_and_name('Prospect')()
-    return rules_class.score_it(prospect, calc_data)
+    rules_class = self._get_client_rules_engine_by_type_and_name('Prospect')
+    
+    rules_instance = rules_class(prospect, calc_data)
+
+    return rules_instance.score_it()
 
   def get_profile_score(self, profile):
     rules_class = self._get_client_rules_engine_by_type_and_name('Profile', profile.provider_type)()
