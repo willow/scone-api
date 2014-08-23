@@ -146,14 +146,31 @@ class BaseProspectRulesEngine(ABC):
     bio = self.prospect.prospect_attrs.get(constants.BIO)
 
     if bio:
+      bio = self._iter_utils.stemmify_string(bio)
+
+      # region client topic
+      client_topics = self.calc_data[constants.STEMMED_TA_TOPIC_KEYWORDS]
+      if client_topics:
+        bio_client_topic_score = self._bio_client_topic_score
+
+        for stemmed_topic_keyword in client_topics:
+          if stemmed_topic_keyword in bio:
+            score += bio_client_topic_score
+            counter[constants.BIO_CLIENT_TOPIC_SCORE] += bio_client_topic_score
+
+        if counter[constants.BIO_CLIENT_TOPIC_SCORE]:
+          score_attrs[constants.BIO_CLIENT_TOPIC_SCORE] = counter[constants.BIO_CLIENT_TOPIC_SCORE]
+
+      "pycharm doesn't recognize endregion"
+      #endregion client topic
+
+      #region important keywords
       bio_keywords = self._important_bio_keywords
 
       if bio_keywords:
         bio_keywords = self._iter_utils.stemmify_iterable(bio_keywords)
 
-        bio_score = self._bio_score
-
-        bio = self._iter_utils.stemmify_string(bio)
+        bio_score = self._bio_important_keyword_score
 
         for kw in bio_keywords:
           if kw in bio:
@@ -162,6 +179,9 @@ class BaseProspectRulesEngine(ABC):
 
         if counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]:
           score_attrs[constants.BIO_IMPORTANT_KEYWORD_SCORE] = counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]
+
+      "pycharm doesn't recognize endregion"
+      #endregion important keywords
 
     return score, score_attrs
 
@@ -243,7 +263,11 @@ class BaseProspectRulesEngine(ABC):
     return ()
 
   @property
-  def _bio_score(self):
+  def _bio_important_keyword_score(self):
+    return 1
+
+  @property
+  def _bio_client_topic_score(self):
     return 1
 
   @property
