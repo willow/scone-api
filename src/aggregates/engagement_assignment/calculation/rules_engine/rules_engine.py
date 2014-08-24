@@ -24,14 +24,17 @@ class RulesEngine():
 
   def get_prospect_score(self, prospect, calc_data):
     rules_class = self._get_client_rules_engine_by_type_and_name('Prospect')
-    
+
     rules_instance = rules_class(prospect, calc_data)
 
     return rules_instance.score_it()
 
-  def get_profile_score(self, profile):
-    rules_class = self._get_client_rules_engine_by_type_and_name('Profile', profile.provider_type)()
-    return rules_class.score_it(profile)
+  def get_profile_score(self, profile, calc_data):
+    rules_class = self._get_client_rules_engine_by_type_and_name('Profile', profile.provider_type)
+
+    rules_instance = rules_class(profile, calc_data)
+
+    return rules_instance.score_it()
 
   def get_assigned_entity_score(self, assigned_entity_object):
     rules_class = self._get_client_rules_engine_by_type_and_name(

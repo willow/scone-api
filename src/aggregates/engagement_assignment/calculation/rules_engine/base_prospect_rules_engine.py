@@ -6,6 +6,7 @@ import logging
 
 from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
+from src.aggregates.engagement_assignment.calculation.rules_engine.base_rules_engine import BaseRulesEngine
 from src.apps.domain.engagement_assignment.services import assigned_prospect_service
 from src.libs.geo_utils.services import geo_location_service
 from src.libs.nlp_utils.services.enums import GenderEnum
@@ -15,7 +16,7 @@ from src.libs.python_utils.collections import iter_utils
 logger = logging.getLogger(__name__)
 
 
-class BaseProspectRulesEngine(ABC):
+class BaseProspectRulesEngine(BaseRulesEngine):
   def __init__(
       self, prospect, calc_data,
       _geo_location_service=None, _iter_utils=None, _assigned_prospect_service=None):
@@ -165,10 +166,10 @@ class BaseProspectRulesEngine(ABC):
         for stemmed_topic_keyword in client_topics:
           if stemmed_topic_keyword in bio:
             score += bio_client_topic_score
-            counter[constants.BIO_CLIENT_TOPIC_SCORE] += bio_client_topic_score
+            counter[constants.BIO_CLIENT_TA_TOPIC_SCORE] += bio_client_topic_score
 
-        if counter[constants.BIO_CLIENT_TOPIC_SCORE]:
-          score_attrs[constants.BIO_CLIENT_TOPIC_SCORE] = counter[constants.BIO_CLIENT_TOPIC_SCORE]
+        if counter[constants.BIO_CLIENT_TA_TOPIC_SCORE]:
+          score_attrs[constants.BIO_CLIENT_TA_TOPIC_SCORE] = counter[constants.BIO_CLIENT_TA_TOPIC_SCORE]
 
       "pycharm doesn't recognize endregion"
       # endregion client topic
@@ -314,8 +315,4 @@ class BaseProspectRulesEngine(ABC):
   def _new_prospect_score(self):
     return 1
 
-  # endregion define prospect scoring attrs
-
-  def _get_default_score_items(self):
-    score, score_attrs, counter = 0, {}, Counter()
-    return score, score_attrs, counter
+    # endregion define prospect scoring attrs

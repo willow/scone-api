@@ -7,9 +7,15 @@ from src.aggregates.engagement_assignment.calculation.rules_engine.rules_engine 
 from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
 from src.aggregates.profile.services import profile_service
 
+_base_score = 'base_score'
+_base_score_attrs = 'base_score_attrs'
+_internal_score = 'internal_score'
+_internal_score_attrs = 'internal_score_attrs'
+_id = 'id'
 
 def _get_calc_data(assigned_calc_objects, client, _calc_data_service=None):
-  if not _calc_data_service: _calc_data_service = calculate_data_service
+  if not _calc_data_service:
+    _calc_data_service = calculate_data_service
   ret_val = {}
 
   stemmed_keywords = _calc_data_service.provide_stemmed_keywords(client, assigned_calc_objects)
@@ -33,11 +39,11 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
 
   prospect_score_object = rules_engine.get_prospect_score(prospect, calc_data)
   score_attrs['prospect'] = {
-    'base_score': prospect_score_object.base_score,
-    'base_score_attrs': prospect_score_object.base_score_attrs,
-    'internal_score': prospect_score_object.internal_score,
-    'internal_score_attrs': prospect_score_object.internal_score_attrs,
-    'id': prospect.id
+    _base_score: prospect_score_object.base_score,
+    _base_score_attrs: prospect_score_object.base_score_attrs,
+    _internal_score: prospect_score_object.internal_score,
+    _internal_score_attrs: prospect_score_object.internal_score_attrs,
+    _id: prospect.id
   }
 
   # get all unique profiles except those that we're going to assign
@@ -48,11 +54,11 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   for profile in profiles:
     profile_score_object = rules_engine.get_profile_score(profile)
     score_attrs['profiles'].append({
-      'base_score': profile_score_object.base_score,
-      'base_score_attrs': profile_score_object.base_score_attrs,
-      'internal_score': profile_score_object.internal_score,
-      'internal_score_attrs': profile_score_object.internal_score_attrs,
-      'id': profile.id,
+      _base_score: profile_score_object.base_score,
+      _base_score_attrs: profile_score_object.base_score_attrs,
+      _internal_score: profile_score_object.internal_score,
+      _internal_score_attrs: profile_score_object.internal_score_attrs,
+      _id: profile.id,
       'provider_type': profile.provider_type,
     })
 
@@ -61,11 +67,11 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   for ae in assigned_calc_objects:
     ae_score_object = rules_engine.get_assigned_entity_score(ae)
     score_attrs['assigned_entities'].append({
-      'base_score': ae_score_object.base_score,
-      'base_score_attrs': ae_score_object.base_score_attrs,
-      'internal_score': ae_score_object.internal_score,
-      'internal_score_attrs': ae_score_object.internal_score_attrs,
-      'id': ae.assigned_entity_id,
+      _base_score: ae_score_object.base_score,
+      _base_score_attrs: ae_score_object.base_score_attrs,
+      _internal_score: ae_score_object.internal_score,
+      _internal_score_attrs: ae_score_object.internal_score_attrs,
+      _id: ae.assigned_entity_id,
       'entity_type': ae.entity_type,
       'provider_type': ae.provider_type
     })
