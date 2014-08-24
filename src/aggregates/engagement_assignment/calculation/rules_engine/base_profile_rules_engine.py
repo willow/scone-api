@@ -83,10 +83,48 @@ class BaseTwitterProfileRulesEngine(BaseProfileRulesEngine):
   def _recent_tweets_score(self):
     return 1
 
-
-class BaseRedditProfileRulesEngine(BaseProfileRulesEngine, ABC):
+class BaseRedditProfileRulesEngine(BaseProfileRulesEngine):
   def _apply_base_score(self):
     score, score_attrs = 0, {}
+
+    recent_comments_score, recent_comments_score_attrs = self._apply_recent_comments_score()
+    score += recent_comments_score
+    score_attrs.update(recent_comments_score_attrs)
+
+    return score, score_attrs
+
+  def _apply_recent_comments_score(self):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    recent_comments = self.profile.profile_attrs.get(constants.RECENT_COMMENTS)
+
+    if recent_comments:
+
+      client_topics = self.calc_data[constants.STEMMED_TA_TOPIC_KEYWORDS]
+
+      recent_comments_score = self._recent_comments_score
+
+      recent_comments = self._iter_utils.stemmify_iterable(recent_comments)
+
+      for stemmed_topic_keyword in client_topics:
+        for comment in recent_comments:
+          if stemmed_topic_keyword in comment:
+            score += recent_comments_score
+            counter[constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE] += recent_comments_score
+            # give, at most, 1 point per topic mention
+            break
+
+      if counter[constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE]:
+
+        x = constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE
+
+        score_attrs[x] = counter[x]
+
+    return score, score_attrs
+
+  @property
+  def _recent_comments_score(self):
+    return 1
 
 
 class BaseLinkedInProfileRulesEngine(BaseProfileRulesEngine, ABC):
