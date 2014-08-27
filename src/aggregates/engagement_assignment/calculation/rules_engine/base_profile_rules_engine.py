@@ -48,6 +48,10 @@ class BaseTwitterProfileRulesEngine(BaseProfileRulesEngine):
     score += recent_tweet_score
     score_attrs.update(recent_tweet_score_attrs)
 
+    followers_score, followers_score_attrs = self._apply_followers_score()
+    score += followers_score
+    score_attrs.update(followers_score_attrs)
+
     return score, score_attrs
 
   def _apply_recent_tweets_score(self):
@@ -72,19 +76,45 @@ class BaseTwitterProfileRulesEngine(BaseProfileRulesEngine):
             break
 
       if counter[constants.RECENT_TWEET_TA_TOPIC_KEYWORD_SCORE]:
-
         x = constants.RECENT_TWEET_TA_TOPIC_KEYWORD_SCORE
 
         score_attrs[x] = counter[x]
 
     return score, score_attrs
 
+  def _apply_followers_score(self):
+    score, score_attrs, counter = self._get_default_score_items()
+
+    followers_min, followers_max = self._followers_following_range
+
+    if followers_min and followers_max:
+
+      followers_count = self.profile.profile_attrs.get(constants.FOLLOWERS_COUNT)
+
+      if followers_count:
+        follower_ratio_score = self._follower_ratio_score
+
+        if followers_min <= followers_count <= followers_max:
+          score += follower_ratio_score
+          score_attrs[constants.FOLLOWERS_COUNT_SCORE] = follower_ratio_score
+
+    return score, score_attrs
+
+
   @property
   def _recent_tweets_score(self):
     return 1
 
-class BaseRedditProfileRulesEngine(BaseProfileRulesEngine):
+  @property
+  def _followers_following_range(self):
+    return (None, None)
 
+  @property
+  def _follower_ratio_score(self):
+    return 1
+
+
+class BaseRedditProfileRulesEngine(BaseProfileRulesEngine):
   def __init__(self, profile, calc_data, _iter_utils=None):
     super().__init__(profile, calc_data, _iter_utils)
 
@@ -119,7 +149,6 @@ class BaseRedditProfileRulesEngine(BaseProfileRulesEngine):
             break
 
       if counter[constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE]:
-
         x = constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE
 
         score_attrs[x] = counter[x]

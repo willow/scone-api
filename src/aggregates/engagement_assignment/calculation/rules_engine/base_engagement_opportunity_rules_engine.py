@@ -89,9 +89,9 @@ class BaseRedditEngagementOpportunityRulesEngine(BaseEngagementOpportunityRulesE
   def _apply_base_score(self):
     score, score_attrs = 0, {}
 
-    recent_comment_score, recent_comment_score_attrs = self._apply_comment_score()
-    score += recent_comment_score
-    score_attrs.update(recent_comment_score_attrs)
+    comment_score, comment_score_attrs = self._apply_comment_score()
+    score += comment_score
+    score_attrs.update(comment_score_attrs)
 
     return score, score_attrs
 
