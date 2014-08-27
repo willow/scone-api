@@ -84,6 +84,10 @@ class BaseTwitterProfileRulesEngine(BaseProfileRulesEngine):
     return 1
 
 class BaseRedditProfileRulesEngine(BaseProfileRulesEngine):
+
+  def __init__(self, profile, calc_data, _iter_utils=None):
+    super().__init__(profile, calc_data, _iter_utils)
+
   def _apply_base_score(self):
     score, score_attrs = 0, {}
 
