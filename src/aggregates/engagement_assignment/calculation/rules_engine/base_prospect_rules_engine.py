@@ -193,6 +193,25 @@ class BaseProspectRulesEngine(BaseRulesEngine):
       "pycharm doesn't recognize endregion"
       # endregion important keywords
 
+      # region avoid keywords
+      bio_keywords = self._important_bio_keywords
+
+      if bio_keywords:
+        bio_keywords = self._iter_utils.stemmify_iterable(bio_keywords)
+
+        bio_score = self._bio_important_keyword_score
+
+        for kw in bio_keywords:
+          if kw in bio:
+            score += bio_score
+            counter[constants.BIO_IMPORTANT_KEYWORD_SCORE] += bio_score
+
+        if counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]:
+          score_attrs[constants.BIO_IMPORTANT_KEYWORD_SCORE] = counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]
+
+      "pycharm doesn't recognize endregion"
+      # endregion avoid keywords
+
     return score, score_attrs
 
   def _apply_website_score(self):
