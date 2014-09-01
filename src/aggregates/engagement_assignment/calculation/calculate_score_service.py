@@ -24,6 +24,8 @@ def _get_calc_data(assigned_calc_objects, client, _calc_data_service=None):
   client_uid = _calc_data_service.provide_client_uid(client)
   ret_val[constants.CLIENT_UID] = client_uid
 
+  ret_val[constants.PROFANITY_FILTER_WORDS] = _calc_data_service.provide_profanity_word_list()
+
   return ret_val
 
 

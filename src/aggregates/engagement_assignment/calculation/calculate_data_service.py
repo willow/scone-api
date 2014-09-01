@@ -3,6 +3,7 @@ from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_opportunity.models import EngagementOpportunity
 from src.aggregates.profile.models import Profile
 from src.aggregates.topic.enums import TopicCategoryEnum
+from src.libs.text_utils.formatting import profanity_filter
 
 
 def provide_stemmed_keywords(client, assigned_calc_objects):
@@ -38,3 +39,7 @@ def provide_stemmed_keywords(client, assigned_calc_objects):
 
 def provide_client_uid(client):
   return client.client_uid
+
+
+def provide_profanity_word_list():
+  return profanity_filter.bad_words

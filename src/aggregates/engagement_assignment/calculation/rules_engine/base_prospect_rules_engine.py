@@ -201,13 +201,19 @@ class BaseProspectRulesEngine(BaseRulesEngine):
 
         bio_score = self._bio_important_keyword_score
 
-        for kw in bio_keywords:
-          if kw in bio:
-            score += bio_score
-            counter[constants.BIO_IMPORTANT_KEYWORD_SCORE] += bio_score
+        avoid_words = self.calc_data[constants.PROFANITY_FILTER_WORDS]
 
-        if counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]:
-          score_attrs[constants.BIO_IMPORTANT_KEYWORD_SCORE] = counter[constants.BIO_IMPORTANT_KEYWORD_SCORE]
+        avoid_words += self._bio_avoid_keywords
+
+        avoid_words = self._iter_utils.stemmify_iterable(avoid_words)
+
+        for kw in bio_keywords:
+          if kw in avoid_words:
+            score += bio_score
+            counter[constants.BIO_AVOID_KEYWORD_SCORE] += bio_score
+
+        if counter[constants.BIO_AVOID_KEYWORD_SCORE]:
+          score_attrs[constants.BIO_AVOID_KEYWORD_SCORE] = counter[constants.BIO_AVOID_KEYWORD_SCORE]
 
       "pycharm doesn't recognize endregion"
       # endregion avoid keywords
@@ -334,4 +340,13 @@ class BaseProspectRulesEngine(BaseRulesEngine):
   def _new_prospect_score(self):
     return 1
 
-    # endregion define prospect scoring attrs
+  @property
+  def _bio_avoid_keywords(self):
+    return ()
+
+  @property
+  def _bio_avoid_keyword_score(self):
+    return -1
+
+  "pycharm recognize region"
+  # endregion define prospect scoring attrs
