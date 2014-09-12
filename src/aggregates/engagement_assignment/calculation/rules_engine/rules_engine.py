@@ -36,12 +36,14 @@ class RulesEngine():
 
     return rules_instance.score_it()
 
-  def get_assigned_entity_score(self, assigned_entity_object):
+  def get_assigned_entity_score(self, assigned_entity_object, calc_data):
     rules_class = self._get_client_rules_engine_by_type_and_name(
       _assigned_entity_names[assigned_entity_object.entity_type], assigned_entity_object.provider_type
-    )()
+    )
 
-    return rules_class.score_it(assigned_entity_object)
+    rules_instance = rules_class(assigned_entity_object.assigned_entity, calc_data)
+
+    return rules_instance.score_it()
 
   def _get_client_rules_engine_by_type_and_name(self, thing_to_score, provider_type=None):
     thing_to_score += "RulesEngine"

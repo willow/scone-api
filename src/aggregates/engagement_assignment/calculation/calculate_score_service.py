@@ -54,7 +54,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
 
   score_attrs['profiles'] = []
   for profile in profiles:
-    profile_score_object = rules_engine.get_profile_score(profile)
+    profile_score_object = rules_engine.get_profile_score(profile, calc_data)
     score_attrs['profiles'].append({
       _base_score: profile_score_object.base_score,
       _base_score_attrs: profile_score_object.base_score_attrs,
@@ -67,7 +67,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
   # loop through ae's
   score_attrs['assigned_entities'] = []
   for ae in assigned_calc_objects:
-    ae_score_object = rules_engine.get_assigned_entity_score(ae)
+    ae_score_object = rules_engine.get_assigned_entity_score(ae, calc_data)
     score_attrs['assigned_entities'].append({
       _base_score: ae_score_object.base_score,
       _base_score_attrs: ae_score_object.base_score_attrs,

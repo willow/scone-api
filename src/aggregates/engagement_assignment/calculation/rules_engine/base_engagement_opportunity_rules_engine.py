@@ -22,11 +22,9 @@ class BaseEngagementOpportunityRulesEngine(BaseRulesEngine):
     self.calc_data = calc_data
 
 
-  def score_it(self, engagement_opportunity):
-    engagement_opportunity_internal_score, engagement_opportunity_internal_score_attrs = self._get_internal_score(
-      engagement_opportunity)
-    engagement_opportunity_base_score, engagement_opportunity_base_score_attrs = self._apply_base_score(
-      engagement_opportunity)
+  def score_it(self):
+    engagement_opportunity_internal_score, engagement_opportunity_internal_score_attrs = self._get_internal_score()
+    engagement_opportunity_base_score, engagement_opportunity_base_score_attrs = self._apply_base_score()
 
     ret_val = RulesEngineScoredObject(
       engagement_opportunity_internal_score, engagement_opportunity_internal_score_attrs,

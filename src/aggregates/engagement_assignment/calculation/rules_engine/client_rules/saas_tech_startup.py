@@ -74,32 +74,32 @@ class ProspectRulesEngine(BaseProspectRulesEngine):
 
 
 class TwitterProfileRulesEngine(BaseTwitterProfileRulesEngine):
-  def _get_internal_score(self, profile):
+  def _get_internal_score(self):
     return 0, {}
 
 
 class RedditProfileRulesEngine(BaseRedditProfileRulesEngine):
-  def _get_internal_score(self, profile):
+  def _get_internal_score(self):
     return 0, {}
 
 
 class LinkedInProfileRulesEngine(BaseLinkedInProfileRulesEngine):
-  def _get_internal_score(self, profile):
+  def _get_internal_score(self):
     return 0, {}
 
 
 class TwitterEngagementOpportunityRulesEngine(BaseTwitterEngagementOpportunityRulesEngine):
-  def _get_internal_score(self, engagement_opportunity):
+  def _get_internal_score(self):
     return 0, {}
 
 
 class RedditEngagementOpportunityRulesEngine(BaseRedditEngagementOpportunityRulesEngine):
-  def _get_internal_score(self, engagement_opportunity):
+  def _get_internal_score(self):
     return 0, {}
 
 
 class LinkedInEngagementOpportunityRulesEngine(BaseLinkedInEngagementOpportunityRulesEngine):
-  def _get_internal_score(self, engagement_opportunity):
+  def _get_internal_score(self):
     return 0, {}
 
     #
