@@ -1,12 +1,9 @@
 import logging
-from src.aggregates.client.enums import ClientTypeEnum
-from importlib import import_module
+
 from src.aggregates.engagement_assignment import constants
+from src.aggregates.engagement_assignment.calculation.rules_engine import rules_engine_class_provider
 from src.apps.engagement_discovery.enums import ProviderChoices
 
-# noinspection PyUnresolvedReferences
-# this is how we can do dynamic imports easily
-from .client_rules import *
 
 logger = logging.getLogger(__name__)
 
@@ -46,17 +43,8 @@ class RulesEngine():
     return rules_instance.score_it()
 
   def _get_client_rules_engine_by_type_and_name(self, thing_to_score, provider_type=None):
-    thing_to_score += "RulesEngine"
+    rules_class = rules_engine_class_provider.get_client_rules_engine_by_type_and_name(
+      self.client.client_type, thing_to_score, provider_type
+    )
 
-    client_type = ClientTypeEnum(self.client.client_type).name
-    client_rules_module = import_module("." + client_type, __package__ + '.client_rules')
-
-    provider_name = ''
-    if provider_type:
-      provider_name = _provider_choices_dict[provider_type]
-
-    class_name = "{0}{1}".format(provider_name, thing_to_score)
-
-    ret_val = getattr(client_rules_module, class_name)
-
-    return ret_val
+    return rules_class
