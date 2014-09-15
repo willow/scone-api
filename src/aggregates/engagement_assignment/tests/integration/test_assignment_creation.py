@@ -1,3 +1,5 @@
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 import pytest
 from unittest.mock import patch
 
@@ -38,8 +40,10 @@ def test_prospect_score_from_test_client_rules_engine(class_provider_mock):
   eo = EngagementOpportunityFactory.create(
     provider_type=ProviderEnum.twitter,
     provider_action_type=ProviderActionEnum.twitter_tweet,
+    profile__prospect__prospect_attrs={constants.RELATIVE_DOB: timezone.now() - relativedelta(years=25)}
   )
 
   ea = EngagementAssignmentFactory.build(assignment_attrs={constants.ASSIGNED_EO_IDS: [eo.id]})
 
-  calculate_score_service.calculate_engagement_assignment_score(client, ea.assignment_attrs)
+  score_attrs = calculate_score_service.calculate_engagement_assignment_score(client, ea.assignment_attrs)
+  assert score_attrs['prospect'][calculate_score_service._base_score_attrs][constants.RELATIVE_DOB_SCORE] == 1

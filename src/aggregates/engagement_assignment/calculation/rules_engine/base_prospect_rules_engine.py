@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from collections import Counter
+from abc import abstractmethod
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 import logging
@@ -8,6 +7,7 @@ from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.calculation.calculation_objects import RulesEngineScoredObject
 from src.aggregates.engagement_assignment.calculation.rules_engine.base_rules_engine import BaseRulesEngine
 from src.apps.domain.engagement_assignment.services import assigned_prospect_service
+from src.libs.datetime_utils.parsers import datetime_parser
 from src.libs.geo_utils.services import geo_location_service
 from src.libs.nlp_utils.services.enums import GenderEnum
 from src.libs.python_utils.collections import iter_utils
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class BaseProspectRulesEngine(BaseRulesEngine):
   def __init__(
       self, prospect, calc_data,
-      _geo_location_service=None, _iter_utils=None, _assigned_prospect_service=None):
+      _geo_location_service=None, _iter_utils=None, _assigned_prospect_service=None, _datetime_parser=None):
 
     self.prospect = prospect
     self.calc_data = calc_data
@@ -32,6 +32,9 @@ class BaseProspectRulesEngine(BaseRulesEngine):
 
     if not _assigned_prospect_service: _assigned_prospect_service = assigned_prospect_service
     self._assigned_prospect_service = _assigned_prospect_service
+
+    if not _datetime_parser: _datetime_parser = datetime_parser
+    self._datetime_parser = _datetime_parser
 
   def score_it(self):
     prospect_internal_score, prospect_internal_score_attrs = self._get_internal_score()
@@ -117,6 +120,7 @@ class BaseProspectRulesEngine(BaseRulesEngine):
 
     if age_min and age_max:
       if age:
+        age = self._datetime_parser.get_datetime(age)
 
         age_years = relativedelta(timezone.now(), age).years
 

@@ -78,7 +78,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
       'provider_type': ae.provider_type
     })
 
-  return 0, score_attrs
+  return score_attrs
 
 
 def get_rules_engine(client):
