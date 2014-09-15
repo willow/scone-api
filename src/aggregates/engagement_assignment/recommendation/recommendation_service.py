@@ -18,11 +18,11 @@ def recommend_action(client, assignment_attrs):
   
   ret_val = []
   
-  if constants.ASSIGNED_EO_IDS in assignment_attrs:
-    assigned_entity_type = constants.ASSIGNED_EO_IDS
+  if constants.ASSIGNED_EO_UIDS in assignment_attrs:
+    assigned_entity_type = constants.ASSIGNED_EO_UIDS
     entity_type = constants.EO
-  elif constants.ASSIGNED_PROFILE_IDS in assignment_attrs:
-    assigned_entity_type = constants.ASSIGNED_PROFILE_IDS
+  elif constants.ASSIGNED_PROFILE_UIDS in assignment_attrs:
+    assigned_entity_type = constants.ASSIGNED_PROFILE_UIDS
     entity_type = constants.PROFILE
   else:
     raise ValueError("Invalid assignment attrs")
@@ -44,7 +44,7 @@ def recommend_action(client, assignment_attrs):
 
 def _get_data_provider(assigned_entity_id, assigned_entity_type):
   
-  if assigned_entity_type == constants.ASSIGNED_EO_IDS:
+  if assigned_entity_type == constants.ASSIGNED_EO_UIDS:
     
     engagement_opportunity = engagement_opportunity_service.get_engagement_opportunity(assigned_entity_id)
     
@@ -53,7 +53,7 @@ def _get_data_provider(assigned_entity_id, assigned_entity_type):
     elif engagement_opportunity.provider_type == ProviderEnum.reddit:
       return RedditRecommendationDataProvider()
     
-  elif assigned_entity_type == constants.ASSIGNED_PROFILE_IDS:
+  elif assigned_entity_type == constants.ASSIGNED_PROFILE_UIDS:
     
     profile = profile_service.get_profile(assigned_entity_id)
     

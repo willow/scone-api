@@ -21,7 +21,7 @@ def test_saas_rules_engine_score():
     provider_action_type=ProviderActionEnum.twitter_tweet,
   )
 
-  ea = EngagementAssignmentFactory.build(assignment_attrs={constants.ASSIGNED_EO_IDS: [eo.id]})
+  ea = EngagementAssignmentFactory.build(assignment_attrs={constants.ASSIGNED_EO_UIDS: [eo.engagement_opportunity_uid]})
 
   calculate_score_service.calculate_engagement_assignment_score(client, ea.assignment_attrs)
 
@@ -43,7 +43,7 @@ def test_prospect_score_from_test_client_rules_engine(class_provider_mock):
     profile__prospect__prospect_attrs={constants.RELATIVE_DOB: timezone.now() - relativedelta(years=25)}
   )
 
-  ea = EngagementAssignmentFactory.build(assignment_attrs={constants.ASSIGNED_EO_IDS: [eo.id]})
+  ea = EngagementAssignmentFactory.build(assignment_attrs={constants.ASSIGNED_EO_UIDS: [eo.engagement_opportunity_uid]})
 
-  score_attrs = calculate_score_service.calculate_engagement_assignment_score(client, ea.assignment_attrs)
+  _, score_attrs = calculate_score_service.calculate_engagement_assignment_score(client, ea.assignment_attrs)
   assert score_attrs['prospect'][calculate_score_service._base_score_attrs][constants.RELATIVE_DOB_SCORE] == 1

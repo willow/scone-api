@@ -22,16 +22,16 @@ class EntityTypeFilter(admin.SimpleListFilter):
 
   def lookups(self, request, model_admin):
     return (
-      (constants.ASSIGNED_EO_IDS, 'engagement opportunity'),
-      (constants.ASSIGNED_PROFILE_IDS, 'profile'),
+      (constants.ASSIGNED_EO_UIDS, 'engagement opportunity'),
+      (constants.ASSIGNED_PROFILE_UIDS, 'profile'),
     )
 
   def queryset(self, request, queryset):
-    if self.value() == constants.ASSIGNED_EO_IDS:
-      return queryset.filter(assignment_attrs__contains=constants.ASSIGNED_EO_IDS)
+    if self.value() == constants.ASSIGNED_EO_UIDS:
+      return queryset.filter(assignment_attrs__contains=constants.ASSIGNED_EO_UIDS)
 
-    elif self.value() == constants.ASSIGNED_PROFILE_IDS:
-      return queryset.filter(assignment_attrs__contains=constants.ASSIGNED_PROFILE_IDS)
+    elif self.value() == constants.ASSIGNED_PROFILE_UIDS:
+      return queryset.filter(assignment_attrs__contains=constants.ASSIGNED_PROFILE_UIDS)
 
 
 class TopicTypeFilter(admin.SimpleListFilter):
@@ -67,12 +67,12 @@ class EngagementAssignmentAdmin(admin.ModelAdmin):
 
     for attr, vals in ea.assignment_attrs.items():
 
-      if attr == constants.ASSIGNED_EO_IDS:
+      if attr == constants.ASSIGNED_EO_UIDS:
         for eo_id in vals:
           eo = engagement_opportunity_service.get_engagement_opportunity(eo_id)
           ret_val.append(eo.engagement_opportunity_attrs)
 
-      elif attr == constants.ASSIGNED_PROFILE_IDS:
+      elif attr == constants.ASSIGNED_PROFILE_UIDS:
         for profile_id in vals:
           profile = profile_service.get_profile(profile_id)
           ret_val.append(profile.profile_attrs)

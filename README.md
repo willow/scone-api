@@ -64,3 +64,28 @@ to a value which is generated mainly for development environment.
 
 This setup allows you to easily keep your site in a public repo if you so 
 wish without causing opening a route to attack your Django passwords.
+
+
+Debug File
+----
+
+```
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.settings.dev")
+
+import django
+
+django.setup()
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+# ******************************************************************
+# ******************************************************************
+# ******************************************************************
+# ******************************************************************
+# ******************************************************************
+# ******************************************************************
+```

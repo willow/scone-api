@@ -1,7 +1,7 @@
 from src.aggregates.engagement_assignment import constants
 
 from src.aggregates.client.enums import ClientTypeEnum
-from src.aggregates.engagement_assignment.calculation import calculate_data_service
+from src.aggregates.engagement_assignment.calculation import calculate_data_service, score_processor
 from src.aggregates.engagement_assignment.calculation.calculation_objects import CalculationAssignedEntityObject
 from src.aggregates.engagement_assignment.calculation.rules_engine.rules_engine import RulesEngine
 from src.aggregates.engagement_opportunity.services import engagement_opportunity_service
@@ -11,7 +11,8 @@ _base_score = 'base_score'
 _base_score_attrs = 'base_score_attrs'
 _internal_score = 'internal_score'
 _internal_score_attrs = 'internal_score_attrs'
-_id = 'id'
+_uid = 'uid'
+
 
 def _get_calc_data(assigned_calc_objects, client, _calc_data_service=None):
   if not _calc_data_service:
@@ -29,7 +30,19 @@ def _get_calc_data(assigned_calc_objects, client, _calc_data_service=None):
   return ret_val
 
 
-def calculate_engagement_assignment_score(client, assignment_attrs):
+def _get_profiles(assigned_calc_objects, prospect):
+  # get all unique profiles except those that we're going to assign
+
+  assigned_profiles = [ae.id for ae in assigned_calc_objects if ae.entity_type == constants.PROFILE]
+
+  profiles = prospect.profiles.exclude(id__in=assigned_profiles)
+
+  return profiles
+
+
+def calculate_engagement_assignment_score(client, assignment_attrs, _score_processor=None):
+  if not _score_processor: _score_processor = score_processor
+
   score_attrs = {}
 
   assigned_calc_objects = _get_assigned_calc_objects(assignment_attrs)
@@ -45,12 +58,10 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
     _base_score_attrs: prospect_score_object.base_score_attrs,
     _internal_score: prospect_score_object.internal_score,
     _internal_score_attrs: prospect_score_object.internal_score_attrs,
-    _id: prospect.id
+    _uid: prospect.prospect_uid
   }
 
-  # get all unique profiles except those that we're going to assign
-  assigned_profiles = [ae.id for ae in assigned_calc_objects if ae.entity_type == constants.PROFILE]
-  profiles = prospect.profiles.exclude(id__in=assigned_profiles)
+  profiles = _get_profiles(assigned_calc_objects, prospect)
 
   score_attrs['profiles'] = []
   for profile in profiles:
@@ -60,7 +71,7 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
       _base_score_attrs: profile_score_object.base_score_attrs,
       _internal_score: profile_score_object.internal_score,
       _internal_score_attrs: profile_score_object.internal_score_attrs,
-      _id: profile.id,
+      _uid: profile.profile_uid,
       'provider_type': profile.provider_type,
     })
 
@@ -73,12 +84,14 @@ def calculate_engagement_assignment_score(client, assignment_attrs):
       _base_score_attrs: ae_score_object.base_score_attrs,
       _internal_score: ae_score_object.internal_score,
       _internal_score_attrs: ae_score_object.internal_score_attrs,
-      _id: ae.assigned_entity_id,
+      _uid: ae.assigned_entity_uid,
       'entity_type': ae.entity_type,
       'provider_type': ae.provider_type
     })
 
-  return score_attrs
+  score, score_attrs = _score_processor.process_score(score_attrs)
+
+  return score, score_attrs
 
 
 def get_rules_engine(client):
@@ -107,18 +120,22 @@ def get_rules_engine(client):
 
 
 def _get_assigned_calc_objects(assignment_attrs):
+  """
+  Convert the attrs into ea entities
+  """
+
   assigned_entities = []
-  for assignment_attr, assigned_entity_ids in assignment_attrs.items():
+  for assignment_attr, assigned_entity_uids in assignment_attrs.items():
 
-    for assigned_entity_id in assigned_entity_ids:
+    for assigned_entity_uid in assigned_entity_uids:
 
-      if assignment_attr == constants.ASSIGNED_EO_IDS:
-        assigned_entity = engagement_opportunity_service.get_engagement_opportunity(assigned_entity_id)
+      if assignment_attr == constants.ASSIGNED_EO_UIDS:
+        assigned_entity = engagement_opportunity_service.get_engagement_opportunity_from_uid(assigned_entity_uid)
         provider_type = assigned_entity.provider_type
         entity_type = constants.EO
         prospect = assigned_entity.profile.prospect
-      elif assignment_attr == constants.ASSIGNED_PROFILE_IDS:
-        assigned_entity = profile_service.get_profile(assigned_entity_id)
+      elif assignment_attr == constants.ASSIGNED_PROFILE_UIDS:
+        assigned_entity = profile_service.get_profile_from_uid(assigned_entity_uid)
         provider_type = assigned_entity.provider_type
         entity_type = constants.PROFILE
         prospect = assigned_entity.prospect

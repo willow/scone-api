@@ -38,13 +38,13 @@ def get_grouped_entities_for_client(client):
     for eo_uid in entity_group_to_add['eo_uids']:
       eo = engagement_opportunity_service.get_engagement_opportunity_from_uid(eo_uid)
       eo_ids.append(eo.id)
-    if eo_ids: ea_group[constants.ASSIGNED_EO_IDS] = eo_ids
+    if eo_ids: ea_group[constants.ASSIGNED_EO_UIDS] = eo_ids
 
     profile_ids = []
     for profile_uid in entity_group_to_add['profile_uids']:
       profile = profile_service.get_profile_from_uid(profile_uid)
       profile_ids.append(profile.id)
-    if profile_ids: ea_group[constants.ASSIGNED_PROFILE_IDS] = profile_ids
+    if profile_ids: ea_group[constants.ASSIGNED_PROFILE_UIDS] = profile_ids
 
     ret_val.append(ea_group)
 
@@ -74,11 +74,11 @@ def refresh_assignments(client):
 
         assignment_attrs = {}
 
-        eo_ids = group.get(constants.ASSIGNED_EO_IDS)
-        if eo_ids: assignment_attrs[constants.ASSIGNED_EO_IDS] = eo_ids
+        eo_ids = group.get(constants.ASSIGNED_EO_UIDS)
+        if eo_ids: assignment_attrs[constants.ASSIGNED_EO_UIDS] = eo_ids
 
-        profile_ids = group.get(constants.ASSIGNED_PROFILE_IDS)
-        if profile_ids: assignment_attrs[constants.ASSIGNED_PROFILE_IDS] = profile_ids
+        profile_ids = group.get(constants.ASSIGNED_PROFILE_UIDS)
+        if profile_ids: assignment_attrs[constants.ASSIGNED_PROFILE_UIDS] = profile_ids
 
         try:
           create_engagement_assignment(client, assignment_attrs)
