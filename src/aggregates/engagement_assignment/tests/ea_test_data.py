@@ -87,7 +87,7 @@ class EngagementAssignmentFactory(factory.DjangoModelFactory):
 # 'new_prospect_score': 1,
 # 'relative_dob_score': 1
 # },
-#           'base_score': 2,
+# 'base_score': 2,
 #           'uid': 1
 #       },
 #       'profiles': [{
@@ -142,7 +142,7 @@ class ScoreAttrsFactory(factory.Factory):
   assigned_entities = factory.List([factory.SubFactory(EngagementOpportunityScoreFactory)])
 
 
-prospect_1_relative_dob_score = ScoreAttrsFactory.build(
+assignment_1 = ScoreAttrsFactory.build(
   prospect__base_score_attrs={
     constants.RELATIVE_DOB_SCORE: 1,
     constants.LOCATION_SCORE: 1,
@@ -158,6 +158,22 @@ prospect_1_relative_dob_score = ScoreAttrsFactory.build(
     entity_type=constants.EO,
     base_score_attrs={
       constants.TWEET_TEXT_TA_TOPIC_KEYWORD_SCORE: 3
+    }
+  )
+)
+
+assignment_2 = ScoreAttrsFactory.build(
+  profiles__0=ProfileScoreFactory.build(
+    provider_type=ProviderEnum.reddit,
+    base_score_attrs={
+      constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE: 5
+    }
+  ),
+  assigned_entities__0=EngagementOpportunityScoreFactory.build(
+    provider_type=ProviderEnum.reddit,
+    entity_type=constants.EO,
+    base_score_attrs={
+      constants.COMMENT_TEXT_TA_TOPIC_KEYWORD_SCORE: 5
     }
   )
 )
