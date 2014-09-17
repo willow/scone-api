@@ -2,21 +2,21 @@ from django.utils import timezone
 from faker import Factory
 import factory
 from factory import fuzzy
-from functools import partial
 import uuid
 
 from src.aggregates.client.enums import ClientTypeChoices
 from src.aggregates.client.models import Client
+from src.aggregates.engagement_assignment import constants
 from src.aggregates.engagement_assignment.models import EngagementAssignment
 from src.aggregates.engagement_opportunity.models import EngagementOpportunity
 from src.aggregates.profile.models import Profile
 from src.aggregates.prospect.models import Prospect
-from src.apps.engagement_discovery.enums import ProviderChoices, ProviderActionChoices
+from src.apps.engagement_discovery.enums import ProviderChoices, ProviderActionChoices, ProviderEnum
 
 
 faker = Factory.create()
 
-str_uid = partial(str, uuid.uuid1)
+str_uid = lambda: str(uuid.uuid1())
 
 # region aggregates
 class ClientFactory(factory.DjangoModelFactory):
@@ -72,41 +72,43 @@ class EngagementAssignmentFactory(factory.DjangoModelFactory):
   system_created_date = factory.fuzzy.FuzzyAttribute(timezone.now)
   client = factory.SubFactory(ClientFactory)
 
+
 # endregion aggregates
 
 # region score_attrs data
 
-  # **Example Format**
-  # ******************
-  #   {
-  #       'prospect': {
-  #           'internal_score_attrs': {},
-  #           'internal_score': 0,
-  #           'base_score_attrs': {
-  #               'new_prospect_score': 1,
-  #               'relative_dob_score': 1
-  #           },
-  #           'base_score': 2,
-  #           'uid': 1
-  #       },
-  #       'profiles': [{
-  #           'provider_type': 1,
-  #           'internal_score': 0,
-  #           'base_score': 0,
-  #           'internal_score_attrs': {},
-  #           'base_score_attrs': {},
-  #           'uid': 1
-  #       }],
-  #       'assigned_entities': [{
-  #           'provider_type': 1,
-  #           'internal_score': 0,
-  #           'base_score': 0,
-  #           'internal_score_attrs': {},
-  #           'entity_type': 'engagement_opportunity',
-  #           'base_score_attrs': {},
-  #           'uid': 1
-  #       }]
-  #   }
+# **Example Format**
+# ******************
+# {
+# 'prospect': {
+# 'internal_score_attrs': {},
+# 'internal_score': 0,
+# 'base_score_attrs': {
+# 'new_prospect_score': 1,
+# 'relative_dob_score': 1
+# },
+#           'base_score': 2,
+#           'uid': 1
+#       },
+#       'profiles': [{
+#           'provider_type': 1,
+#           'internal_score': 0,
+#           'base_score': 0,
+#           'internal_score_attrs': {},
+#           'base_score_attrs': {},
+#           'uid': 1
+#       }],
+#       'assigned_entities': [{
+#           'provider_type': 1,
+#           'internal_score': 0,
+#           'base_score': 0,
+#           'internal_score_attrs': {},
+#           'entity_type': 'engagement_opportunity',
+#           'base_score_attrs': {},
+#           'uid': 1
+#       }]
+#   }
+
 
 class BaseScoreFactory(factory.Factory):
   class Meta:
@@ -118,11 +120,18 @@ class BaseScoreFactory(factory.Factory):
   base_score_attrs = {}
   uid = factory.fuzzy.FuzzyAttribute(str_uid)
 
+
 class ProspectScoreFactory(BaseScoreFactory):
   pass
 
+
 class ProfileScoreFactory(BaseScoreFactory):
   pass
+
+
+class EngagementOpportunityScoreFactory(BaseScoreFactory):
+  pass
+
 
 class ScoreAttrsFactory(factory.Factory):
   class Meta:
@@ -130,16 +139,28 @@ class ScoreAttrsFactory(factory.Factory):
 
   prospect = factory.SubFactory(ProspectScoreFactory)
   profiles = factory.List([factory.SubFactory(ProfileScoreFactory)])
-  assigned_entities = factory.List([factory.SubFactory(ProfileScoreFactory)])
+  assigned_entities = factory.List([factory.SubFactory(EngagementOpportunityScoreFactory)])
 
 
-
-prospect_1 = ScoreAttrsFactory.build(
-    prospect__base_score_attrs={
-      'relative_dob_score': 1,
-      'new_prospect_score': 1
+prospect_1_relative_dob_score = ScoreAttrsFactory.build(
+  prospect__base_score_attrs={
+    constants.RELATIVE_DOB_SCORE: 1,
+    constants.LOCATION_SCORE: 1,
+  },
+  profiles__0=ProfileScoreFactory.build(
+    provider_type=ProviderEnum.twitter,
+    base_score_attrs={
+      constants.RECENT_TWEET_TA_TOPIC_KEYWORD_SCORE: 5
+    }
+  ),
+  assigned_entities__0=EngagementOpportunityScoreFactory.build(
+    provider_type=ProviderEnum.twitter,
+    entity_type=constants.EO,
+    base_score_attrs={
+      constants.TWEET_TEXT_TA_TOPIC_KEYWORD_SCORE: 3
     }
   )
+)
 
 
 # endregion score_attrs data
