@@ -9,11 +9,11 @@ def _get_upper_bound_key(entity_type):
 def _process_assigned_entities(score_attrs, score_data):
   ae_attrs = score_attrs[constants.ASSIGNED_ENTITIES]
   for ae_attr in ae_attrs:
-    score = ae_attr[constants.BASE_SCORE]
+    score = ae_attr[constants.BASE_SCORE] + ae_attr[constants.INTERNAL_SCORE]
     provider_data = score_data[ae_attr[constants.PROVIDER_TYPE]]
     upper_bound_key = _get_upper_bound_key(ae_attr[constants.ENTITY_TYPE])
     provider_upper_bound_score = provider_data[upper_bound_key]
-    ae_attr[constants.BASE_SCORE] = score / provider_upper_bound_score
+    ae_attr[constants.SCORE] = score / provider_upper_bound_score
 
 
 def process_score(client, score_attrs, _score_data_provider=None):
