@@ -16,3 +16,9 @@ def test_score_processor_returns_correct_total_for_ae_attrs():
   _, ret_val = score_processor.process_score(client_1, assignment_1, score_data_provider_mock)
 
   assert ret_val[constants.ASSIGNED_ENTITIES][0][constants.SCORE] == .3
+
+def test_score_processor_returns_correct_total_for_profile_attrs():
+  score_data_provider_mock = _get_score_data_provider()
+  _, ret_val = score_processor.process_score(client_1, assignment_1, score_data_provider_mock)
+
+  assert ret_val[constants.PROFILES][0][constants.SCORE] == .5
