@@ -73,6 +73,7 @@ class EngagementAssignmentFactory(factory.DjangoModelFactory):
   client = factory.SubFactory(ClientFactory)
 
 
+client_1 = ClientFactory.build()
 # endregion aggregates
 
 # region score_attrs data
@@ -88,14 +89,14 @@ class EngagementAssignmentFactory(factory.DjangoModelFactory):
 # 'relative_dob_score': 1
 # },
 # 'base_score': 2,
-#           'uid': 1
-#       },
-#       'profiles': [{
-#           'provider_type': 1,
-#           'internal_score': 0,
-#           'base_score': 0,
-#           'internal_score_attrs': {},
-#           'base_score_attrs': {},
+# 'uid': 1
+# },
+# 'profiles': [{
+# 'provider_type': 1,
+# 'internal_score': 0,
+# 'base_score': 0,
+# 'internal_score_attrs': {},
+# 'base_score_attrs': {},
 #           'uid': 1
 #       }],
 #       'assigned_entities': [{
@@ -143,12 +144,14 @@ class ScoreAttrsFactory(factory.Factory):
 
 
 assignment_1 = ScoreAttrsFactory.build(
+  prospect__base_score=2,
   prospect__base_score_attrs={
     constants.RELATIVE_DOB_SCORE: 1,
     constants.LOCATION_SCORE: 1,
   },
   profiles__0=ProfileScoreFactory.build(
     provider_type=ProviderEnum.twitter,
+    base_score=5,
     base_score_attrs={
       constants.RECENT_TWEET_TA_TOPIC_KEYWORD_SCORE: 5
     }
@@ -156,6 +159,7 @@ assignment_1 = ScoreAttrsFactory.build(
   assigned_entities__0=EngagementOpportunityScoreFactory.build(
     provider_type=ProviderEnum.twitter,
     entity_type=constants.EO,
+    base_score=3,
     base_score_attrs={
       constants.TWEET_TEXT_TA_TOPIC_KEYWORD_SCORE: 3
     }
@@ -165,6 +169,7 @@ assignment_1 = ScoreAttrsFactory.build(
 assignment_2 = ScoreAttrsFactory.build(
   profiles__0=ProfileScoreFactory.build(
     provider_type=ProviderEnum.reddit,
+    base_score=5,
     base_score_attrs={
       constants.RECENT_COMMENT_TA_TOPIC_KEYWORD_SCORE: 5
     }
@@ -172,6 +177,7 @@ assignment_2 = ScoreAttrsFactory.build(
   assigned_entities__0=EngagementOpportunityScoreFactory.build(
     provider_type=ProviderEnum.reddit,
     entity_type=constants.EO,
+    base_score=5,
     base_score_attrs={
       constants.COMMENT_TEXT_TA_TOPIC_KEYWORD_SCORE: 5
     }
@@ -180,3 +186,18 @@ assignment_2 = ScoreAttrsFactory.build(
 
 
 # endregion score_attrs data
+
+# region score_data_provider_data
+client_1_score_data = {
+  ProviderEnum.twitter: {
+    constants.PROSPECT_UPPER_BOUND_SCORE: 4,
+    constants.PROFILE_UPPER_BOUND_SCORE: 10,
+    constants.ENGAGEMENT_OPPORTUNITY_UPPER_BOUND_SCORE: 10,
+  },
+  ProviderEnum.reddit: {
+    constants.PROSPECT_UPPER_BOUND_SCORE: 5,
+    constants.PROFILE_UPPER_BOUND_SCORE: 10,
+    constants.ENGAGEMENT_OPPORTUNITY_UPPER_BOUND_SCORE: 8,
+  }
+}
+# endregion score_data_provider_data
