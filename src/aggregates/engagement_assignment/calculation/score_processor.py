@@ -7,29 +7,46 @@ def _get_upper_bound_key(entity_type):
 
 
 def _get_provider_upper_bound_score(entity_type, entity_attrs, score_data):
-  provider_data = score_data[entity_attrs[constants.PROVIDER_TYPE]]
-  upper_bound_key = _get_upper_bound_key(entity_type)
-  provider_upper_bound_score = provider_data[upper_bound_key]
+  provider_type = entity_attrs.get(constants.PROVIDER_TYPE)
 
-  return provider_upper_bound_score
+  if provider_type:
+    provider_data = score_data[provider_type]
+  else:
+    # some entities (like prospects) are not provider-specific
+    provider_data = score_data
+
+  upper_bound_key = _get_upper_bound_key(entity_type)
+
+  ret_val = provider_data[upper_bound_key]
+
+  return ret_val
 
 
 def _process_assigned_entities(score_attrs, score_data):
-  ae_attrs = score_attrs[constants.ASSIGNED_ENTITIES]
+  assigned_entities = score_attrs[constants.ASSIGNED_ENTITIES]
 
-  for ae_attr in ae_attrs:
-    score = ae_attr[constants.BASE_SCORE] + ae_attr[constants.INTERNAL_SCORE]
-    provider_upper_bound_score = _get_provider_upper_bound_score(ae_attr[constants.ENTITY_TYPE], ae_attr, score_data)
-    ae_attr[constants.SCORE] = score / provider_upper_bound_score
+  for ae_attrs in assigned_entities:
+    score = ae_attrs[constants.BASE_SCORE] + ae_attrs[constants.INTERNAL_SCORE]
+    provider_upper_bound_score = _get_provider_upper_bound_score(ae_attrs[constants.ENTITY_TYPE], ae_attrs, score_data)
+    ae_attrs[constants.SCORE] = score / provider_upper_bound_score
 
 
 def _process_profiles(score_attrs, score_data):
-  profile_attrs = score_attrs[constants.PROFILES]
+  profiles = score_attrs[constants.PROFILES]
 
-  for profile_attr in profile_attrs:
-    score = profile_attr[constants.BASE_SCORE] + profile_attr[constants.INTERNAL_SCORE]
-    provider_upper_bound_score = _get_provider_upper_bound_score(constants.PROFILE, profile_attr, score_data)
-    profile_attr[constants.SCORE] = score / provider_upper_bound_score
+  for profile_attrs in profiles:
+    score = profile_attrs[constants.BASE_SCORE] + profile_attrs[constants.INTERNAL_SCORE]
+    provider_upper_bound_score = _get_provider_upper_bound_score(constants.PROFILE, profile_attrs, score_data)
+    profile_attrs[constants.SCORE] = score / provider_upper_bound_score
+
+
+def _process_prospect(score_attrs, score_data):
+  prospect_attrs = score_attrs[constants.PROSPECT]
+
+  score = prospect_attrs[constants.BASE_SCORE] + prospect_attrs[constants.INTERNAL_SCORE]
+  provider_upper_bound_score = _get_provider_upper_bound_score(constants.PROSPECT, prospect_attrs, score_data)
+  profile_score = score_attrs[constants.PROFILES][0][constants.SCORE]
+  prospect_attrs[constants.SCORE] = score * profile_score / provider_upper_bound_score
 
 
 def process_score(client, score_attrs, _score_data_provider=None):
@@ -39,5 +56,6 @@ def process_score(client, score_attrs, _score_data_provider=None):
 
   _process_assigned_entities(score_attrs, score_data)
   _process_profiles(score_attrs, score_data)
+  _process_prospect(score_attrs, score_data)
 
   return 0, score_attrs

@@ -22,3 +22,9 @@ def test_score_processor_returns_correct_total_for_profile_attrs():
   _, ret_val = score_processor.process_score(client_1, assignment_1, score_data_provider_mock)
 
   assert ret_val[constants.PROFILES][0][constants.SCORE] == .5
+
+def test_score_processor_returns_correct_total_for_prospect_attrs():
+  score_data_provider_mock = _get_score_data_provider()
+  _, ret_val = score_processor.process_score(client_1, assignment_1, score_data_provider_mock)
+
+  assert ret_val[constants.PROSPECT][constants.SCORE] == .125

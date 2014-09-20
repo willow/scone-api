@@ -97,8 +97,8 @@ client_1 = ClientFactory.build()
 # 'base_score': 0,
 # 'internal_score_attrs': {},
 # 'base_score_attrs': {},
-#           'uid': 1
-#       }],
+# 'uid': 1
+# }],
 #       'assigned_entities': [{
 #           'provider_type': 1,
 #           'internal_score': 0,
@@ -189,13 +189,12 @@ assignment_2 = ScoreAttrsFactory.build(
 
 # region score_data_provider_data
 client_1_score_data = {
+  constants.PROSPECT_UPPER_BOUND_SCORE: 8,
   ProviderEnum.twitter: {
-    constants.PROSPECT_UPPER_BOUND_SCORE: 4,
     constants.PROFILE_UPPER_BOUND_SCORE: 10,
     constants.ENGAGEMENT_OPPORTUNITY_UPPER_BOUND_SCORE: 10,
   },
   ProviderEnum.reddit: {
-    constants.PROSPECT_UPPER_BOUND_SCORE: 5,
     constants.PROFILE_UPPER_BOUND_SCORE: 10,
     constants.ENGAGEMENT_OPPORTUNITY_UPPER_BOUND_SCORE: 8,
   }
