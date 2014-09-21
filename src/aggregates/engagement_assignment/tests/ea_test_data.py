@@ -177,9 +177,9 @@ assignment_2 = ScoreAttrsFactory.build(
   assigned_entities__0=EngagementOpportunityScoreFactory.build(
     provider_type=ProviderEnum.reddit,
     entity_type=constants.EO,
-    base_score=5,
+    base_score=4,
     base_score_attrs={
-      constants.COMMENT_TEXT_TA_TOPIC_KEYWORD_SCORE: 5
+      constants.COMMENT_TEXT_TA_TOPIC_KEYWORD_SCORE: 4
     }
   )
 )
