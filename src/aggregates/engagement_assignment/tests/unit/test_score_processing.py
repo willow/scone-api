@@ -40,4 +40,11 @@ def test_score_processor_returns_correct_total_for_assignment_2_ae_attrs():
 
   assert ret_val[constants.ASSIGNED_ENTITIES][0][constants.SCORE] == .5
 
-#endregion test different providers
+
+def test_score_processor_returns_correct_total_for_assignment_2_profile_attrs():
+  score_data_provider_mock = _get_score_data_provider()
+  _, ret_val = score_processor.process_score(client_1, assignment_2, score_data_provider_mock)
+
+  assert ret_val[constants.PROFILES][0][constants.SCORE] == .5
+
+# endregion test different providers
