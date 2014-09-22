@@ -6,15 +6,11 @@ from src.aggregates.engagement_assignment.tests.ea_test_data import assignment_1
   assignment_2
 
 
-def _get_score_data_provider():
-  score_data_provider_mock = MagicMock(spec=score_data_provider)
-  score_data_provider_mock.client_score_provider_bounds.return_value = client_1_score_provider_data
-  return score_data_provider_mock
-
-
 # region test different providers
-def test_score_processor_returns_correct_total_for_assignment_1_ae_attrs():
-  score_data_provider_mock = _get_score_data_provider()
+def test_score_data_service_gets_max_score():
+
+  score_data_service_mock = MagicMock(spec=score_data_service)
+    score_data_service_mock.client_score_provider_bounds.return_value = client_1_score_provider_data
   _, ret_val = score_processor.process_score(client_1, assignment_1, score_data_provider_mock)
 
   score_data_service

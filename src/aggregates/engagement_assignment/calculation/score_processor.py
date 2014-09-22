@@ -1,5 +1,5 @@
 from src.aggregates.engagement_assignment import constants
-from src.aggregates.engagement_assignment.calculation import score_data_provider
+from src.aggregates.engagement_assignment.calculation import score_data_service
 
 
 def _get_upper_bound_key(entity_type):
@@ -49,10 +49,10 @@ def _process_prospect(score_attrs, score_data):
   prospect_attrs[constants.SCORE] = score * profile_score / provider_upper_bound_score
 
 
-def process_score(client, score_attrs, _score_data_provider=None):
-  if not _score_data_provider: _score_data_provider = score_data_provider
+def process_score(client, score_attrs, _score_data_service=None):
+  if not _score_data_service: _score_data_service = score_data_service
 
-  score_data = _score_data_provider.client_score_provider_bounds(client)
+  score_data = _score_data_service.client_score_provider_bounds(client)
 
   _process_assigned_entities(score_attrs, score_data)
   _process_profiles(score_attrs, score_data)
