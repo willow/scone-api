@@ -80,35 +80,49 @@ client_1 = ClientFactory.build()
 
 # **Example Format**
 # ******************
-# {
-# 'prospect': {
-# 'internal_score_attrs': {},
-# 'internal_score': 0,
-# 'base_score_attrs': {
-# 'new_prospect_score': 1,
-# 'relative_dob_score': 1
-# },
-# 'base_score': 2,
-# 'uid': 1
-# },
-# 'profiles': [{
-# 'provider_type': 1,
-# 'internal_score': 0,
-# 'base_score': 0,
-# 'internal_score_attrs': {},
-# 'base_score_attrs': {},
-# 'uid': 1
-# }],
-# 'assigned_entities': [{
-# 'provider_type': 1,
-# 'internal_score': 0,
-# 'base_score': 0,
-# 'internal_score_attrs': {},
-#           'entity_type': 'engagement_opportunity',
-#           'base_score_attrs': {},
-#           'uid': 1
-#       }]
-#   }
+### {
+###    "prospect":{
+###       "internal_score_attrs":{
+###
+###       },
+###       "internal_score":0,
+###       "base_score_attrs":{
+###          "new_prospect_score":1,
+###          "relative_dob_score":1
+###       },
+###       "base_score":2,
+###       "uid":1
+###    },
+###    "profiles":[
+###       {
+###          "provider_type":1,
+###          "internal_score":0,
+###          "base_score":0,
+###          "internal_score_attrs":{
+###
+###          },
+###          "base_score_attrs":{
+###
+###          },
+###          "uid":1
+###       }
+###    ],
+###    "assigned_entities":[
+###       {
+###          "provider_type":1,
+###          "internal_score":0,
+###          "base_score":0,
+###          "internal_score_attrs":{
+###
+###          },
+###          "entity_type":"engagement_opportunity",
+###          "base_score_attrs":{
+###
+###          },
+###          "uid":1
+###       }
+###    ]
+### }
 
 
 class BaseScoreFactory(factory.Factory):
@@ -205,9 +219,20 @@ client_1_typical_score_data = {
   constants.PROSPECT_TOTAL_SCORED_COUNT: 200,
   constants.PROSPECT_TYPICAL_SCORE: 3.5,
 }
-
-client_1_prospect_scores = {
-  ProviderEnum.twitter: [1, 2, 3, 4, 5, 6, 7, 8, 20],
-  ProviderEnum.reddit: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20],
-}
 # endregion score_data_service_data
+#
+# region score_data_repo_data
+
+client_1_scores = {
+  constants.PROSPECT_RECENT_SCORES: [0, 0, 0, 1, 2, 3, 4, 5, 6, 20],
+  ProviderEnum.twitter: {
+    constants.PROFILE_RECENT_SCORES: [1, 2, 3, 4, 5, 6, 7, 8, 20],
+    constants.ENGAGEMENT_OPPORTUNITY_RECENT_SCORES: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20],
+
+  },
+  ProviderEnum.reddit: {
+    constants.PROFILE_RECENT_SCORES: [1, 2, 3, 4, 5, 6, 7, 8, 20],
+    constants.ENGAGEMENT_OPPORTUNITY_RECENT_SCORES: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20],
+  },
+}
+# endregion score_data_repo_data
